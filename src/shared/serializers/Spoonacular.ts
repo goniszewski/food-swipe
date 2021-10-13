@@ -1,5 +1,5 @@
-import { Recipe } from 'src/modules/recipe/entities/recipe.entity';
-import { Ingredient } from '../entities/ingredient.schema';
+import { Ingredient } from 'src/modules/ingredient/entities/ingredient.schema';
+import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
 
 // https://spoonacular.com/food-api/docs#Get-Recipe-Information
 const converter = (data) => {
@@ -13,7 +13,7 @@ const converter = (data) => {
         unit:
           ingredient.measures.metric.unitShort !== ''
             ? ingredient.measures.metric.unitShort
-            : null,
+            : undefined,
         notes: ingredient.meta,
       };
     },

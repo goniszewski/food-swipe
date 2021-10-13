@@ -1,22 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-
-import { Base } from '../entities/base.entity';
-import { Item } from './item.schema';
+import { Item } from '../../item/entities/item.schema';
 
 @Schema()
-export class Ingredient extends Base {
+export class Ingredient {
+  @Prop()
+  id?: string;
+
+  @Prop({ unique: true, trim: true })
+  name: string;
+
   @Prop()
   image?: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Item' })
   item: Item;
 
-  @Prop()
+  @Prop({ type: String })
   amount: number | string;
 
   @Prop()
-  unit: Unit | string | null;
+  unit?: Unit | string;
 
   @Prop([String])
   notes?: string[]; // czy pokrojone, zmielone

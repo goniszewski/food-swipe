@@ -1,10 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Base } from './base.entity';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 @Schema()
-export class Category extends Base {
+export class Category {
   @Prop()
+  id?: string;
+
+  @Prop({ unique: true, trim: true })
+  name: string;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Category' })
   parent?: Category;
 
   @Prop()

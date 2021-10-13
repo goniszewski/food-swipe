@@ -1,9 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { Recipe, RecipeDocument } from './entities/recipe.schema';
 
 @Injectable()
 export class RecipeService {
+  constructor(
+    @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
+  ) {}
   create(createRecipeDto: CreateRecipeDto) {
     return 'This action adds a new recipe';
   }

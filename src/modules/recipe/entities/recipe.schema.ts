@@ -1,12 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-
-import { Base } from './base.entity';
-import { Category } from './category.schema';
-import { Ingredient } from './ingredient.schema';
+import { Category } from '../../category/entities/category.schema';
+import { Ingredient } from '../../ingredient/entities/ingredient.schema';
 
 @Schema()
-export class Recipe extends Base {
+export class Recipe {
+  @Prop()
+  id?: string;
+
+  @Prop({ unique: true, trim: true })
+  name: string;
+
   @Prop()
   uri: string;
 
@@ -38,7 +42,7 @@ export class Recipe extends Base {
   categories: Category[];
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Tag' }] })
-  tags: Tag[] | [];
+  tags: Tag[];
 
   @Prop()
   isVegan?: boolean;
@@ -69,4 +73,4 @@ export type RecipeDocument = Recipe & Document;
 
 export const RecipeSchema = SchemaFactory.createForClass(Recipe);
 
-export class Tag extends Base {}
+export class Tag {}

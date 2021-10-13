@@ -1,5 +1,5 @@
-import { Recipe } from 'src/modules/recipe/entities/recipe.entity';
-import { Ingredient } from '../entities/ingredient.schema';
+import { Ingredient } from 'src/modules/ingredient/entities/ingredient.schema';
+import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
 
 // https://www.themealdb.com/api.php
 const converter = (data) => {
@@ -22,7 +22,6 @@ const converter = (data) => {
           },
           name: ingredient.toLowerCase(),
           amount: `${meal[`strMeasure${i}`].trim()}`,
-          unit: null,
         });
       }
     }

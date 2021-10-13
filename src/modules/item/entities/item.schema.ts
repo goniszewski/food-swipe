@@ -1,10 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-
-import { Base } from '../entities/base.entity';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 @Schema()
-export class Item extends Base {
+export class Item {
+  @Prop()
+  id?: string;
+
+  @Prop({ unique: true, trim: true })
+  name: string;
+
   @Prop()
   isVegan?: boolean;
 
