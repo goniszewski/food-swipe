@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Base } from './base';
+import { Base } from './base.entity';
 
 @Schema()
 export class Category extends Base {

@@ -1,5 +1,5 @@
-import { Ingredient } from '../models/ingredient.schema';
-import { Recipe } from '../models/recipe.schema';
+import { Recipe } from 'src/modules/recipe/entities/recipe.entity';
+import { Ingredient } from '../entities/ingredient.schema';
 
 // https://www.themealdb.com/api.php
 const converter = (data) => {
