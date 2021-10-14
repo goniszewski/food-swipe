@@ -1,5 +1,5 @@
-import { Ingredient } from 'src/modules/ingredient/entities/ingredient.schema';
 import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
+import { Ingredient } from '../models/ingredient';
 
 // https://spoonacular.com/food-api/docs#Get-Recipe-Information
 const converter = (data) => {

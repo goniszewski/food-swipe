@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CategoryService } from '../category/category.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { Recipe, RecipeDocument } from './entities/recipe.schema';
@@ -9,17 +10,35 @@ import { Recipe, RecipeDocument } from './entities/recipe.schema';
 export class RecipeService {
   constructor(
     @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
+    private categoryService: CategoryService,
   ) {}
-  create(createRecipeDto: CreateRecipeDto) {
-    return 'This action adds a new recipe';
+  async create(createRecipeDto: CreateRecipeDto) {
+    const categories = await Promise.all(
+      createRecipeDto.categories.map(async (cat) => {
+        const isCat = await this.categoryService.findByName(cat.name);
+
+        if (!isCat) {
+          const newCat = await this.categoryService.create(cat);
+          return newCat;
+        }
+        return isCat;
+      }),
+    );
+
+    const recipe = <Recipe>await new this.recipeModel({
+      ...createRecipeDto,
+      categories,
+    }).save();
+
+    return recipe;
   }
 
   findAll() {
     return `This action returns all recipe`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} recipe`;
+  findOne(id: string) {
+    return this.recipeModel.findById(id);
   }
 
   update(id: number, updateRecipeDto: UpdateRecipeDto) {

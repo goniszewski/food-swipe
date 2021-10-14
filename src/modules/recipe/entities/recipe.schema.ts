@@ -1,7 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Category } from '../../category/entities/category.schema';
-import { Ingredient } from '../../ingredient/entities/ingredient.schema';
 
 @Schema()
 export class Recipe {
@@ -35,14 +34,39 @@ export class Recipe {
   @Prop({ trim: true })
   videoUrl?: string;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Ingredient' }] })
-  ingredients: Ingredient[];
+  // @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Ingredient' }] })
+  // ingredients: Ingredient[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Category' }] })
+  @Prop(
+    raw({
+      name: { type: String },
+      image: { type: String },
+      item: {
+        type: MongooseSchema.Types.ObjectId,
+        ref: 'Item',
+        autopopulate: true,
+      },
+      amount: { type: String },
+      unit: { type: String, require: false },
+      notes: { type: [String], require: false },
+      isMain: { type: Boolean, require: false },
+    }),
+  )
+  ingredients: Record<string, any>;
+
+  @Prop({
+    type: [
+      {
+        type: MongooseSchema.Types.ObjectId,
+        ref: 'Category',
+        autopopulate: true,
+      },
+    ],
+  })
   categories: Category[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Tag' }] })
-  tags: Tag[];
+  @Prop([String])
+  tags: string[];
 
   @Prop()
   isVegan?: boolean;
@@ -72,5 +96,3 @@ export class Recipe {
 export type RecipeDocument = Recipe & Document;
 
 export const RecipeSchema = SchemaFactory.createForClass(Recipe);
-
-export class Tag {}

@@ -11,8 +11,8 @@ export class CategoryService {
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
   ) {}
 
-  create(createCategoryDto: CreateCategoryDto) {
-    return 'This action adds a new category';
+  async create(createCategoryDto: CreateCategoryDto) {
+    return new this.categoryModel(createCategoryDto).save();
   }
 
   findAll() {
@@ -21,6 +21,10 @@ export class CategoryService {
 
   findOne(id: number) {
     return `This action returns a #${id} category`;
+  }
+
+  findByName(name: string) {
+    return this.categoryModel.findOne({ name }).exec();
   }
 
   update(id: number, updateCategoryDto: UpdateCategoryDto) {
