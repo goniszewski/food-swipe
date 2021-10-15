@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -27,8 +28,8 @@ import { UserModule } from './modules/user/user.module';
         )}?authSource=admin`,
         autoCreate: true,
         connectionFactory: (connection) => {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
           connection.plugin(require('mongoose-autopopulate'));
+          connection.plugin(require('@abhisekp/mongoose-to-json'));
           return connection;
         },
       }),

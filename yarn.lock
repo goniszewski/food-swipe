@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@abhisekp/mongoose-to-json@^2.4.7":
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/@abhisekp/mongoose-to-json/-/mongoose-to-json-2.4.7.tgz#03a0ebe025936fcdaaa05ec70e71dbd8f64abbf8"
+  integrity sha512-5lhxaspcxv5va/i5I39hnA6ZybrLihK4UDP4Vc6MNhGQv45ZY98qZXiYfSnW+rOrOj+p4/7EvU0vCUNX4AFVYQ==
+
 "@angular-devkit/core@12.0.5":
   version "12.0.5"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.0.5.tgz#3d02abd97684434f6e1ffee470b7a9c63987ae51"
@@ -3730,6 +3735,11 @@ mongoose-autopopulate@^0.16.0:
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.16.0.tgz#d3fa11b8ffc2ffc8b107debcdeed2e7bf2947c2b"
   integrity sha512-OSRETKRTk6B3cF7cSLYPE+iUs/DTIY5+07gVYNzCdTRu4oB3uMahc0qjZYepZqZJKm+nv8SihtSHRM5gScn+fA==
+
+mongoose-tojson-formatter@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mongoose-tojson-formatter/-/mongoose-tojson-formatter-1.0.1.tgz#d3325af8278061c7e851d343e600c242121b04fa"
+  integrity sha1-0zJa+CeAYcfoUdND5gDCQhIbBPo=
 
 mongoose@^6.0.10:
   version "6.0.10"

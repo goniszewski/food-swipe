@@ -12,16 +12,30 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private recipeService: RecipeService,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const user = <User>await new this.userModel(createUserDto).save();
+    return user;
+  }
+
+  async addChoice(userId: string, recipeId: string) {
+    const recipe = await this.recipeService.findById(recipeId);
+    const user = await this.userModel.findById(userId);
+
+    if (!recipe) {
+      throw new Error(`Recipe with id ${recipeId} doesn't exist.`);
+    }
+
+    user.choicesHistory.push(recipe);
+
+    return user.save();
   }
 
   findAll() {
     return `This action returns all user`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findById(id: string) {
+    return this.userModel.findById(id).exec();
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

@@ -1,9 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
-import { Category } from '../../category/entities/category.schema';
 
-@Schema()
+@Schema({
+  // toJSON: {
+  //   virtuals: true,
+  //   versionKey: false,
+  //   transform: function (doc, ret) {
+  //     ret.id = ret._id;
+  //     delete ret.password;
+  //   },
+  // },
+  // toObject: {
+  //   virtuals: true,
+  //   getters: true,
+  //   transform: function (doc, ret) {
+  //     ret.id = ret._id;
+  //     delete ret.password;
+  //   },
+  // },
+})
 export class User {
   @Prop()
   id?: string;
@@ -14,11 +30,19 @@ export class User {
   @Prop({ trim: true })
   name: string;
 
-  @Prop()
+  @Prop({ private: true })
   password: string;
 
-  @Prop()
-  favourites: number;
+  @Prop({
+    type: [
+      {
+        type: MongooseSchema.Types.ObjectId,
+        ref: 'Recipe',
+        autopopulate: true,
+      },
+    ],
+  })
+  favourites: Recipe[];
 
   @Prop({
     type: [

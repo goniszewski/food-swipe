@@ -27,7 +27,7 @@ export class RecipeController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.recipeService.findOne(id);
+    return this.recipeService.findById(id);
   }
 
   @Patch(':id')

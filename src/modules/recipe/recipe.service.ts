@@ -30,15 +30,17 @@ export class RecipeService {
       categories,
     }).save();
 
-    return recipe;
+    return recipe.id;
   }
 
   findAll() {
     return `This action returns all recipe`;
   }
 
-  findOne(id: string) {
-    return this.recipeModel.findById(id);
+  async findById(id: string) {
+    const user = await this.recipeModel.findById(id);
+
+    return user;
   }
 
   update(id: number, updateRecipeDto: UpdateRecipeDto) {

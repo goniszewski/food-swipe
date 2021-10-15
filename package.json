@@ -21,6 +21,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@abhisekp/mongoose-to-json": "^2.4.7",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.0.2",
     "@nestjs/core": "^8.0.0",
@@ -30,6 +31,7 @@
     "class-validator": "^0.13.1",
     "mongoose": "^6.0.10",
     "mongoose-autopopulate": "^0.16.0",
+    "mongoose-tojson-formatter": "^1.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
