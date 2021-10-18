@@ -1,5 +1,5 @@
+import { Ingredient } from 'src/modules/ingredient/entities/ingredient.schema';
 import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
-import { Ingredient } from '../models/ingredient';
 
 // https://www.themealdb.com/api.php
 const converter = (data) => {
@@ -18,7 +18,7 @@ const converter = (data) => {
       if (ingredient && ingredient !== ('' || ' ')) {
         ingredients.push({
           item: {
-            name: ingredient.toLowerCase(),
+            name: null,
           },
           name: ingredient.toLowerCase(),
           amount: `${meal[`strMeasure${i}`].trim()}`,

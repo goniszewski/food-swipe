@@ -1,15 +1,16 @@
+import { Ingredient } from 'src/modules/ingredient/entities/ingredient.schema';
 import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
-import { Ingredient } from '../models/ingredient';
 
 // https://spoonacular.com/food-api/docs#Get-Recipe-Information
 const converter = (data) => {
   const ingredients: Ingredient[] = data.extendedIngredients.map(
     (ingredient) => {
       return <Ingredient>{
+        name: ingredient.name,
         item: {
           name: ingredient.name,
         },
-        amount: Math.round(ingredient.measures.metric.amount),
+        amount: `${Math.round(ingredient.measures.metric.amount)}`,
         unit:
           ingredient.measures.metric.unitShort !== ''
             ? ingredient.measures.metric.unitShort

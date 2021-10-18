@@ -1,5 +1,6 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Ingredient } from 'src/modules/ingredient/entities/ingredient.schema';
 import { Category } from '../../category/entities/category.schema';
 
 @Schema()
@@ -34,25 +35,35 @@ export class Recipe {
   @Prop({ trim: true })
   videoUrl?: string;
 
-  // @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Ingredient' }] })
-  // ingredients: Ingredient[];
-
-  @Prop(
-    raw({
-      name: { type: String },
-      image: { type: String },
-      item: {
+  @Prop({
+    type: [
+      {
         type: MongooseSchema.Types.ObjectId,
-        ref: 'Item',
+        ref: 'Ingredient',
         autopopulate: true,
       },
-      amount: { type: String },
-      unit: { type: String, require: false },
-      notes: { type: [String], require: false },
-      isMain: { type: Boolean, require: false },
-    }),
-  )
-  ingredients: Record<string, any>;
+    ],
+  })
+  ingredients: Ingredient[];
+
+  // @Prop(
+  //   raw([
+  //     {
+  //       name: { type: String },
+  //       image: { type: String },
+  //       item: {
+  //         type: MongooseSchema.Types.ObjectId,
+  //         ref: 'Item',
+  //         autopopulate: true,
+  //       },
+  //       amount: { type: String },
+  //       unit: { type: String, require: false },
+  //       notes: { type: [String], require: false },
+  //       isMain: { type: Boolean, require: false },
+  //     },
+  //   ]),
+  // )
+  // ingredients: Record<string, any>[];
 
   @Prop({
     type: [

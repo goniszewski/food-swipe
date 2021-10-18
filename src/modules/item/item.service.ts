@@ -9,8 +9,8 @@ import { Item, ItemDocument } from './entities/item.schema';
 export class ItemService {
   constructor(@InjectModel(Item.name) private itemModel: Model<ItemDocument>) {}
 
-  create(createItemDto: CreateItemDto) {
-    return 'This action adds a new item';
+  async create(createItemDto: CreateItemDto) {
+    return new this.itemModel(createItemDto).save();
   }
 
   findAll() {
@@ -19,6 +19,10 @@ export class ItemService {
 
   findOne(id: number) {
     return `This action returns a #${id} item`;
+  }
+
+  async findByName(name: string) {
+    return this.itemModel.findOne({ name }).exec();
   }
 
   update(id: number, updateItemDto: UpdateItemDto) {
