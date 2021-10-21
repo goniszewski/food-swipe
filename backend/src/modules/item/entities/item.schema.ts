@@ -17,6 +17,9 @@ export class Item {
 
   @Prop()
   isAllergen?: boolean;
+
+  @Prop()
+  isGlutenFree?: boolean;
 }
 
 export type ItemDocument = Item & Document;

@@ -15,23 +15,23 @@ export class CategoryService {
     return new this.categoryModel(createCategoryDto).save();
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(): Promise<Category[]> {
+    return this.categoryModel.find({}).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findById(id: string): Promise<Category> {
+    return this.categoryModel.findById(id).exec();
   }
 
-  findByName(name: string) {
+  async findByName(name: string) {
     return this.categoryModel.findOne({ name }).exec();
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    return this.categoryModel.findByIdAndUpdate(id, updateCategoryDto).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    return this.categoryModel.findByIdAndRemove(id);
   }
 }

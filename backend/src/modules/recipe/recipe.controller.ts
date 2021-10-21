@@ -16,27 +16,30 @@ export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
   @Post()
-  create(@Body() createRecipeDto: CreateRecipeDto) {
+  async create(@Body() createRecipeDto: CreateRecipeDto) {
     return this.recipeService.create(createRecipeDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.recipeService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.recipeService.findById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
-    return this.recipeService.update(+id, updateRecipeDto);
+  async update(
+    @Param('id') id: string,
+    @Body() updateRecipeDto: UpdateRecipeDto,
+  ) {
+    return this.recipeService.update(id, updateRecipeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.recipeService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.recipeService.remove(id);
   }
 }

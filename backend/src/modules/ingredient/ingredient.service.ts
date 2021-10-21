@@ -12,23 +12,29 @@ export class IngredientService {
     private ingredientModel: Model<IngredientDocument>,
   ) {}
 
-  create(createIngredientDto: CreateIngredientDto) {
+  async create(createIngredientDto: CreateIngredientDto) {
     return new this.ingredientModel(createIngredientDto).save();
   }
 
-  findAll() {
-    return `This action returns all ingredient`;
+  async findAll(): Promise<Ingredient[]> {
+    return this.ingredientModel.find({}).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ingredient`;
+  async findById(id: string): Promise<Ingredient> {
+    return this.ingredientModel.findById(id).exec();
   }
 
-  update(id: number, updateIngredientDto: UpdateIngredientDto) {
-    return `This action updates a #${id} ingredient`;
+  async findByName(name: string) {
+    return this.ingredientModel.findOne({ name }).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ingredient`;
+  async update(id: string, updateIngredientDto: UpdateIngredientDto) {
+    return this.ingredientModel
+      .findByIdAndUpdate(id, updateIngredientDto)
+      .exec();
+  }
+
+  async remove(id: string) {
+    return this.ingredientModel.findByIdAndRemove(id);
   }
 }

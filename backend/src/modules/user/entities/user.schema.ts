@@ -53,7 +53,7 @@ export class User {
       },
     ],
   })
-  choicesHistory?: Recipe[];
+  choicesHistory: Recipe[];
 
   @Prop({
     type: [
@@ -76,7 +76,7 @@ export class User {
   defaultGlutenFree?: boolean;
 
   @Prop()
-  defaultRaw?: boolean;
+  defaultNotRaw?: boolean;
 
   @Prop()
   allergiesTo: string[]; // peanuts, lactose

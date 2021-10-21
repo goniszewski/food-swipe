@@ -30,19 +30,23 @@ export class UserService {
     return user.save();
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(): Promise<User[]> {
+    return this.userModel.find({}).exec();
   }
 
-  findById(id: string) {
+  async findById(id: string): Promise<User> {
     return this.userModel.findById(id).exec();
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByLogin(login: string) {
+    return this.userModel.findOne({ login }).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return this.userModel.findByIdAndUpdate(id, updateUserDto).exec();
+  }
+
+  async remove(id: string) {
+    return this.userModel.findByIdAndRemove(id);
   }
 }

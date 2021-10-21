@@ -64,21 +64,23 @@ export class RecipeService {
     }).save();
   }
 
-  findAll() {
-    return `This action returns all recipe`;
+  async findAll(): Promise<Recipe[]> {
+    return this.recipeModel.find({}).exec();
   }
 
-  async findById(id: string) {
-    const user = await this.recipeModel.findById(id);
-
-    return user;
+  async findById(id: string): Promise<Recipe> {
+    return this.recipeModel.findById(id).exec();
   }
 
-  update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return `This action updates a #${id} recipe`;
+  async findByName(name: string) {
+    return this.recipeModel.findOne({ name }).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} recipe`;
+  async update(id: string, updateRecipeDto: UpdateRecipeDto) {
+    return this.recipeModel.findByIdAndUpdate(id, updateRecipeDto).exec();
+  }
+
+  async remove(id: string) {
+    return this.recipeModel.findByIdAndRemove(id);
   }
 }

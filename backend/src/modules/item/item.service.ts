@@ -13,23 +13,23 @@ export class ItemService {
     return new this.itemModel(createItemDto).save();
   }
 
-  findAll() {
-    return `This action returns all item`;
+  async findAll(): Promise<Item[]> {
+    return this.itemModel.find({}).exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findById(id: string): Promise<Item> {
+    return this.itemModel.findById(id).exec();
   }
 
   async findByName(name: string) {
     return this.itemModel.findOne({ name }).exec();
   }
 
-  update(id: number, updateItemDto: UpdateItemDto) {
-    return `This action updates a #${id} item`;
+  async update(id: string, updateItemDto: UpdateItemDto) {
+    return this.itemModel.findByIdAndUpdate(id, updateItemDto).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} item`;
+  async remove(id: string) {
+    return this.itemModel.findByIdAndRemove(id);
   }
 }
