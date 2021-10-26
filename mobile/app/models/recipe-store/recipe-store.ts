@@ -1,11 +1,8 @@
-import { Instance, SnapshotOut, types, cast } from "mobx-state-tree"
+import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { RecipeModel, RecipeSnapshot } from "../recipe/recipe"
 import { RecipeApi } from "../../services/api/recipe-api"
 import { withEnvironment } from "../extensions/with-environment"
 
-/**
- * Example store containing Rick and Morty characters
- */
 export const RecipeStoreModel = types
   .model("RecipeStore")
   .props({
@@ -15,7 +12,6 @@ export const RecipeStoreModel = types
   .actions((self) => ({
     saveRecipes: (recipeSnapshots: RecipeSnapshot[]) => {
       self.recipes.replace(recipeSnapshots)
-      // self.recipes = cast(recipeSnapshots)
     },
   }))
   .actions((self) => ({

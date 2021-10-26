@@ -46,12 +46,14 @@ export const DemoListScreen: FC<StackScreenProps<NavigatorParamList, "demoList">
   ({ navigation }) => {
     const goBack = () => navigation.goBack()
 
-    const { characterStore } = useStores()
-    const { characters } = characterStore
+    const { recipeStore } = useStores()
+    const { recipes } = recipeStore
+    // const { characterStore } = useStores()
+    // const { characters } = characterStore
 
     useEffect(() => {
       async function fetchData() {
-        await characterStore.getCharacters()
+        await recipeStore.getRecipes()
       }
 
       fetchData()
@@ -70,13 +72,12 @@ export const DemoListScreen: FC<StackScreenProps<NavigatorParamList, "demoList">
           />
           <FlatList
             contentContainerStyle={FLAT_LIST}
-            data={[...characters]}
+            data={[...recipes]}
             keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
               <View style={LIST_CONTAINER}>
-                <Image source={{ uri: item.image }} style={IMAGE} />
                 <Text style={LIST_TEXT}>
-                  {item.name} ({item.status})
+                  {item.name} ({item.instructions})
                 </Text>
               </View>
             )}

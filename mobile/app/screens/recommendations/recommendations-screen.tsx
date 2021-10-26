@@ -26,23 +26,19 @@ const styles = {
   `,
 }
 
-export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> = observer(
-  ({ navigation }) => {
-    // Pull in one of our MST stores
-    // const { someStore, anotherStore } = useStores()
+export const RecommendationsScreen: FC<
+  StackScreenProps<NavigatorParamList, "recommendations">
+> = observer(({ navigation }) => {
+  // Pull in one of our MST stores
+  // const { someStore, anotherStore } = useStores()
 
-    // Pull in navigation via hook
-    // const navigation = useNavigation()
-    return (
-      <Screen style={styles.root} preset="fixed">
-        <WideView>
-          <Text h1>FoodSwipe</Text>
-        </WideView>
-        <WideView>
-          <Text h3>Hi there!</Text>
-          <Button title="Let's get started!" onPress={() => navigation.navigate("login")} />
-        </WideView>
-      </Screen>
-    )
-  },
-)
+  // Pull in navigation via hook
+  // const navigation = useNavigation()
+  return (
+    <Screen style={styles.root} preset="fixed">
+      <WideView>
+        <Text h1>Some Recipe</Text>
+      </WideView>
+    </Screen>
+  )
+})

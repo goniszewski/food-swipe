@@ -3,6 +3,31 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 /**
  * Model description here for TypeScript hints.
  */
+export const Category = types.model("Category").props({
+  id: types.identifier,
+  name: types.string,
+})
+
+export const Item = types.model("Item").props({
+  id: types.identifier,
+  name: types.string,
+  isVegan: types.maybe(types.boolean),
+  isVegetarian: types.maybe(types.boolean),
+  isAllergen: types.maybe(types.boolean),
+  isGlutenFree: types.maybe(types.boolean),
+})
+
+export const Ingredient = types.model("Ingredient").props({
+  id: types.identifier,
+  name: types.string,
+  image: types.maybe(types.string),
+  item: Item,
+  amount: types.string,
+  unit: types.maybe(types.string),
+  notes: types.maybe(types.string),
+  isMain: types.maybe(types.boolean),
+})
+
 export const RecipeModel = types.model("Recipe").props({
   id: types.identifier,
   name: types.string,
@@ -14,9 +39,9 @@ export const RecipeModel = types.model("Recipe").props({
   description: types.string,
   instructions: types.maybe(types.string),
   videoUrl: types.maybe(types.string),
-  ingredients: types.array(types.string),
-  categories: types.array(types.string),
-  tags: types.array(types.string),
+  ingredients: types.array(Ingredient),
+  categories: types.array(Category),
+  tags: types.maybeNull(types.array(types.string)),
   isVegan: types.maybe(types.boolean),
   isCheap: types.maybe(types.boolean),
   isVegetarian: types.maybe(types.boolean),

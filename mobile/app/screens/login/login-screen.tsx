@@ -26,7 +26,7 @@ const styles = {
   `,
 }
 
-export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> = observer(
+export const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
   ({ navigation }) => {
     // Pull in one of our MST stores
     // const { someStore, anotherStore } = useStores()
@@ -39,8 +39,11 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
           <Text h1>FoodSwipe</Text>
         </WideView>
         <WideView>
-          <Text h3>Hi there!</Text>
-          <Button title="Let's get started!" onPress={() => navigation.navigate("login")} />
+          <Input placeholder="Login" />
+          <Input placeholder="Password" secureTextEntry />
+        </WideView>
+        <WideView>
+          <Button title="Sign in" onPress={() => navigation.navigate("demo")} />
         </WideView>
       </Screen>
     )

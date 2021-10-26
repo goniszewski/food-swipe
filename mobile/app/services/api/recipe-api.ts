@@ -26,7 +26,7 @@ export class RecipeApi {
         if (problem) return problem
       }
 
-      const recipes = response.data.results
+      const recipes = response.data
 
       return { kind: "ok", recipes }
     } catch (e) {
