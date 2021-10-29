@@ -43,7 +43,7 @@ const converter = (data) => {
               .split(',')
               .filter((tag: string) => tag !== '')
               .map((tag: string) => ({ name: tag.toLowerCase() }))
-          : null,
+          : [],
       author: meal.strSource.split('//')[1].split('/')[0],
       recipeUrl: meal.strSource,
       apiName: 'TheMealDB',

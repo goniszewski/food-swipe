@@ -31,7 +31,7 @@ export class Ingredient {
   notes?: string;
 
   @Prop()
-  isMain?: string;
+  isMain?: boolean;
 }
 
 export type IngredientDocument = Ingredient & Document;
