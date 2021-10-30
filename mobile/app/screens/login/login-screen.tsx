@@ -43,7 +43,7 @@ export const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = ob
           <Input placeholder="Password" secureTextEntry />
         </WideView>
         <WideView>
-          <Button title="Sign in" onPress={() => navigation.navigate("demo")} />
+          <Button title="Sign in" onPress={() => navigation.navigate("recommendations")} />
         </WideView>
       </Screen>
     )

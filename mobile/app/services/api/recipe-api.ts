@@ -19,6 +19,7 @@ export class RecipeApi {
         "http://localhost:9000/recipes",
         { amount: API_PAGE_SIZE },
       )
+      console.log({ response })
 
       // the typical ways to die when calling an api
       if (!response.ok) {

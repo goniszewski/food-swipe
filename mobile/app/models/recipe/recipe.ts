@@ -20,10 +20,10 @@ export const Item = types.model("Item").props({
 export const Ingredient = types.model("Ingredient").props({
   id: types.identifier,
   name: types.string,
-  image: types.maybe(types.string),
+  image: types.maybeNull(types.string),
   item: Item,
   amount: types.string,
-  unit: types.maybe(types.string),
+  unit: types.maybeNull(types.string),
   notes: types.maybe(types.string),
   isMain: types.maybe(types.boolean),
 })
@@ -37,10 +37,10 @@ export const RecipeModel = types.model("Recipe").props({
   caloriesPerServing: types.maybe(types.number),
   preparationTime: types.number,
   description: types.string,
-  instructions: types.maybe(types.string),
-  videoUrl: types.maybe(types.string),
+  instructions: types.maybe(types.union(types.string, types.null)),
+  videoUrl: types.maybe(types.union(types.string, types.null)),
   ingredients: types.array(Ingredient),
-  categories: types.array(Category),
+  categories: types.maybe(types.array(Category)),
   tags: types.maybeNull(types.array(types.string)),
   isVegan: types.maybe(types.boolean),
   isCheap: types.maybe(types.boolean),
@@ -49,6 +49,7 @@ export const RecipeModel = types.model("Recipe").props({
   recipeUrl: types.string,
   apiName: types.maybe(types.string),
   apiAttributionHTML: types.maybe(types.string),
+  validated: types.maybe(types.boolean),
 })
 // .views((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
 // .actions((self) => ({})) // eslint-disable-line @typescript-eslint/no-unused-vars
