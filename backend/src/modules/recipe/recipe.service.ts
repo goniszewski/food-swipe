@@ -17,51 +17,63 @@ export class RecipeService {
     private itemService: ItemService,
   ) {}
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
-    const exist = await this.recipeModel.findOne({
-      name: createRecipeDto.name,
-    });
+    try {
+      const exist = await this.recipeModel
+        .findOne({
+          name: createRecipeDto.name,
+        })
+        .exec();
 
-    if (exist) {
-      throw new ConflictException(
-        `Recipe with name '${createRecipeDto.name}' already exist.`,
+      if (exist) {
+        throw new ConflictException(
+          `Recipe with name '${createRecipeDto.name}' already exist.`,
+        );
+      }
+
+      const categories = await Promise.all(
+        createRecipeDto.categories.map(async (cat) => {
+          const isCat = await this.categoryService.findByName(cat.name);
+
+          if (isCat) {
+            return isCat;
+          }
+          return await this.categoryService.create(cat);
+        }),
       );
+
+      const ingredients = await Promise.all(
+        createRecipeDto.ingredients.map(async (ing) => {
+          let item: any;
+
+          item = await this.itemService.findByName(ing.item.name);
+
+          if (!item) {
+            item = await this.itemService.create({ ...ing.item });
+          }
+          const ingredient = await this.ingredientService.create({
+            ...ing,
+            item,
+          });
+
+          return ingredient;
+        }),
+      );
+
+      // return new this.recipeModel({
+      //   ...createRecipeDto,
+      //   categories,
+      //   ingredients,
+      // }).save();
+      return this.recipeModel
+        .findOneAndUpdate(
+          { name: createRecipeDto.name },
+          { $setOnInsert: { ...createRecipeDto, categories, ingredients } },
+          { upsert: true, new: true },
+        )
+        .exec();
+    } catch (e) {
+      console.error('Error during creation of recipe:', e);
     }
-
-    const categories = await Promise.all(
-      createRecipeDto.categories.map(async (cat) => {
-        const isCat = await this.categoryService.findByName(cat.name);
-
-        if (!isCat) {
-          const newCat = await this.categoryService.create(cat);
-          return newCat;
-        }
-        return isCat;
-      }),
-    );
-
-    const ingredients = await Promise.all(
-      createRecipeDto.ingredients.map(async (ing) => {
-        let item: any;
-
-        item = await this.itemService.findByName(ing.item.name);
-
-        if (!item) {
-          item = await this.itemService.create({ ...ing.item });
-        }
-        const ingredient = await this.ingredientService.create({
-          ...ing,
-          item,
-        });
-
-        return ingredient;
-      }),
-    );
-
-    return new this.recipeModel({
-      ...createRecipeDto,
-      categories,
-      ingredients,
-    }).save();
   }
 
   async findAll(): Promise<Recipe[]> {

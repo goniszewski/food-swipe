@@ -6,6 +6,7 @@ import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoryModule } from './modules/category/category.module';
+import { DataFetcherModule } from './modules/data-fetcher/data-fetcher.module';
 import { ItemModule } from './modules/item/item.module';
 import { RecipeModule } from './modules/recipe/recipe.module';
 import { UserModule } from './modules/user/user.module';
@@ -39,6 +40,7 @@ import { UserModule } from './modules/user/user.module';
     ItemModule,
     CategoryModule,
     UserModule,
+    DataFetcherModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,7 +10,14 @@ export class ItemService {
   constructor(@InjectModel(Item.name) private itemModel: Model<ItemDocument>) {}
 
   async create(createItemDto: CreateItemDto) {
-    return new this.itemModel(createItemDto).save();
+    // return new this.itemModel(createItemDto).save();
+    return this.itemModel
+      .findOneAndUpdate(
+        { name: createItemDto.name },
+        { $setOnInsert: createItemDto },
+        { upsert: true, new: true },
+      )
+      .exec();
   }
 
   async findAll(): Promise<Item[]> {
@@ -30,6 +37,6 @@ export class ItemService {
   }
 
   async remove(id: string) {
-    return this.itemModel.findByIdAndRemove(id);
+    return this.itemModel.findByIdAndRemove(id).exec();
   }
 }

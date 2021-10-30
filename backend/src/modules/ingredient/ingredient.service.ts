@@ -13,7 +13,14 @@ export class IngredientService {
   ) {}
 
   async create(createIngredientDto: CreateIngredientDto) {
-    return new this.ingredientModel(createIngredientDto).save();
+    // return new this.ingredientModel(createIngredientDto).save();
+    return this.ingredientModel
+      .findOneAndUpdate(
+        { name: createIngredientDto.name },
+        { $setOnInsert: createIngredientDto },
+        { upsert: true, new: true },
+      )
+      .exec();
   }
 
   async findAll(): Promise<Ingredient[]> {

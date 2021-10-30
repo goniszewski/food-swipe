@@ -12,7 +12,14 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    return new this.categoryModel(createCategoryDto).save();
+    // return new this.categoryModel(createCategoryDto).save();
+    return this.categoryModel
+      .findOneAndUpdate(
+        { name: createCategoryDto.name },
+        { $setOnInsert: createCategoryDto },
+        { upsert: true, new: true },
+      )
+      .exec();
   }
 
   async findAll(): Promise<Category[]> {

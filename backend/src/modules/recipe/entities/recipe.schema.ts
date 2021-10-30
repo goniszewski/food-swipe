@@ -83,6 +83,9 @@ export class Recipe {
 
   @Prop()
   apiAttributionHTML?: string;
+
+  @Prop({ default: false })
+  validated: boolean;
 }
 
 export type RecipeDocument = Recipe & Document;
