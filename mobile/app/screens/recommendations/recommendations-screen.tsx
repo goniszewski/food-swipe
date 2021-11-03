@@ -9,8 +9,8 @@ import { NavigatorParamList } from "../../navigators"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
 import { color } from "../../theme"
-import { Button, Text, Tile, Image } from "react-native-elements"
-import { useStores } from "../../models"
+import { Button, Text, Tile, Badge, Icon } from "react-native-elements"
+import { Recipe, useStores } from "../../models"
 
 const WideView = styled.View`
   align-items: center;
@@ -30,13 +30,30 @@ const styles = {
     height: 70%; */
     border-radius: 20px;
   `,
+  recipeTileTitleContainer: css`
+    background: rgba(40, 40, 40, 0.8);
+    font-weight: 600;
+    font-size: 26px;
+    text-transform: uppercase;
+  `,
+  recipeTileCaptionContainer: css`
+    background: rgba(40, 40, 40, 0.8);
+    font-style: italic;
+    font-size: 18px;
+  `,
+  reject: css`
+    margin-top: 40%;
+  `,
+  accept: css`
+    margin-top: 40%;
+  `,
 }
 
 export const RecommendationsScreen: FC<
   StackScreenProps<NavigatorParamList, "recommendations">
 > = observer(({ navigation }) => {
   const { recipeStore } = useStores()
-  const { recipes } = recipeStore
+  const { recipes }: { recipes: Recipe[] } = recipeStore
 
   useEffect(() => {
     async function fetchData() {
@@ -45,6 +62,20 @@ export const RecommendationsScreen: FC<
 
     fetchData()
   }, [recipes])
+
+  const onApprove = async (index: number) => {
+    const { id } = recipes[index]
+    console.info(`Approving recipe with id ${id}`)
+
+    return recipeStore.approveRecipe(id)
+  }
+
+  const onReject = async (index: number) => {
+    const { id } = recipes[index]
+    console.info(`Rejecting recipe with id ${id}`)
+
+    return recipeStore.rejectRecipe(id)
+  }
 
   return (
     <Screen style={styles.root} preset="fixed">
@@ -65,12 +96,38 @@ export const RecommendationsScreen: FC<
                     // contentContainerStyle={{ height: 70, backgroundColor: "#ccc" }}
                     title={recipe.name}
                     featured
-                    caption={recipe.description}
+                    caption={`${recipe.description} ${
+                      recipe.preparationTime > 0
+                        ? `\nPreparation time: ${recipe.preparationTime}`
+                        : ""
+                    }`}
+                    captionStyle={styles.recipeTileCaptionContainer}
+                    titleStyle={styles.recipeTileTitleContainer}
                   />
                 </>
               )}
             </View>
           )}
+          renderNope={() => (
+            <Icon
+              name="meh-rolling-eyes"
+              type="font-awesome-5"
+              size={64}
+              color="red"
+              containerStyle={{ ...styles.reject, transform: [{ rotate: "25deg" }] }}
+            />
+          )}
+          renderYep={() => (
+            <Icon
+              name="laugh-beam"
+              type="font-awesome-5"
+              size={64}
+              color="green"
+              containerStyle={{ ...styles.accept, transform: [{ rotate: "-25deg" }] }}
+            />
+          )}
+          onSwipedLeft={(index) => onReject(index)}
+          onSwipedRight={(index) => onApprove(index)}
         />
       </WideView>
     </Screen>

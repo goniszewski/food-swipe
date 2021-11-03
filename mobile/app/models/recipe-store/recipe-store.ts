@@ -25,6 +25,26 @@ export const RecipeStoreModel = types
         __DEV__ && console.tron.log(result.kind)
       }
     },
+    rejectRecipe: async (id: string) => {
+      const recipesApi = new RecipeApi(self.environment.api)
+      const result = await recipesApi.removeRecommendation(id)
+
+      if (result.kind === "ok") {
+        self.saveRecipes(self.recipes.filter((r) => r.id !== id))
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    },
+    approveRecipe: async (id: string) => {
+      const recipesApi = new RecipeApi(self.environment.api)
+      const result = await recipesApi.addChoice(id)
+
+      if (result.kind === "ok") {
+        self.saveRecipes(self.recipes.filter((r) => r.id !== id))
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    },
   }))
 
 type RecipeStoreType = Instance<typeof RecipeStoreModel>
