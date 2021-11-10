@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
+import { Allergens } from 'src/shared/constants/allergens.enum';
 
 @Schema({
   // toJSON: {
@@ -30,37 +31,34 @@ export class User {
   @Prop({ trim: true })
   name: string;
 
-  @Prop({ private: true })
-  password: string;
-
   @Prop({
     type: [
       {
         type: MongooseSchema.Types.ObjectId,
         ref: 'Recipe',
-        autopopulate: true,
+        autopopulate: false,
       },
     ],
   })
-  favourites: Recipe[];
+  favourites?: Recipe[];
 
   @Prop({
     type: [
       {
         type: MongooseSchema.Types.ObjectId,
         ref: 'Recipe',
-        autopopulate: true,
+        autopopulate: false,
       },
     ],
   })
-  choicesHistory: Recipe[];
+  choicesHistory?: Recipe[];
 
   @Prop({
     type: [
       {
         type: MongooseSchema.Types.ObjectId,
         ref: 'Recipe',
-        autopopulate: true,
+        autopopulate: false,
       },
     ],
   })
@@ -79,7 +77,7 @@ export class User {
   defaultNotRaw?: boolean;
 
   @Prop()
-  allergiesTo: string[]; // peanuts, lactose
+  allergiesTo?: Allergens[];
 
   @Prop()
   debug?: boolean;

@@ -1,11 +1,6 @@
 import { GeneralApiProblem } from "./api-problem"
 import { Character } from "../../models/character/character"
-import { Recipe } from "../../models"
-
-export interface User {
-  id: string
-  name: string
-}
+import { Recipe, User } from "../../models"
 
 export type GetUsersResult = { kind: "ok"; users: User[] } | GeneralApiProblem
 export type GetUserResult = { kind: "ok"; user: User } | GeneralApiProblem

@@ -39,7 +39,7 @@ export class RecipeApi {
     try {
       // make the api call
       const response: ApiResponse<any> = await this.api.apisauce.get(
-        "http://localhost:9000/recipes", // todo add proper endpoint
+        `http://localhost:9000/users/recommendations/${id}`,
         { amount: API_PAGE_SIZE },
       )
 

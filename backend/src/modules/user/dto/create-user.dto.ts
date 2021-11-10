@@ -1,3 +1,3 @@
 import { User } from '../entities/user.schema';
 
-export class CreateUserDto extends User {}
+export class CreateUserDto implements Partial<User> {}

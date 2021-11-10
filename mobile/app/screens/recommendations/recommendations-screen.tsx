@@ -52,7 +52,7 @@ const styles = {
 export const RecommendationsScreen: FC<
   StackScreenProps<NavigatorParamList, "recommendations">
 > = observer(({ navigation }) => {
-  const { recipeStore } = useStores()
+  const { recipeStore, userStore } = useStores()
   const { recipes }: { recipes: Recipe[] } = recipeStore
 
   useEffect(() => {
@@ -67,14 +67,14 @@ export const RecommendationsScreen: FC<
     const { id } = recipes[index]
     console.info(`Approving recipe with id ${id}`)
 
-    return recipeStore.approveRecipe(id)
+    return userStore.approveRecipe(id)
   }
 
   const onReject = async (index: number) => {
     const { id } = recipes[index]
     console.info(`Rejecting recipe with id ${id}`)
 
-    return recipeStore.rejectRecipe(id)
+    return userStore.rejectRecipe(id)
   }
 
   return (

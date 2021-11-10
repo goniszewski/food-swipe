@@ -8,7 +8,7 @@ export class Recipe {
   @Prop()
   id?: string;
 
-  @Prop({ unique: true, trim: true })
+  @Prop({ trim: true })
   name: string;
 
   @Prop()

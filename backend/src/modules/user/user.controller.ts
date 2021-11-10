@@ -6,12 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+
+import { User } from './entities/user.schema';
+import ArrayPagination from 'src/shared/interfaces/array-pagination.interface';
 
 @Controller('user')
+@UseGuards(AuthGuard('jwt'))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -20,9 +27,81 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Patch('recommendations')
+  async addRecommendations(
+    @Request() req,
+    @Body() { recommendationIds }: { recommendationIds: string[] },
+  ) {
+    const { id: userId }: Partial<User> = req.user;
+    return this.userService.addRecommendations(userId, recommendationIds);
+  }
+
+  @Patch('choices')
+  async addChoice(@Request() req, @Body() body) {
+    const { id: userId }: Partial<User> = req.user;
+    const { recipeId } = body;
+
+    return this.userService.addChoice(userId, recipeId);
+  }
+
+  @Patch('favourites')
+  async addFavorite(@Request() req, @Body() body) {
+    const { id: userId }: Partial<User> = req.user;
+    const { recipeId } = body;
+
+    return this.userService.addFavoriteRecipe(userId, recipeId);
+  }
+
+  @Get('recommendations')
+  async getRecommendations(
+    @Param('id') id: string,
+    @Param() pagination: ArrayPagination,
+  ) {
+    return this.userService.getRecommendations(id, pagination);
+  }
+
+  @Get('choices')
+  async getChoices(@Request() req, @Param() pagination: ArrayPagination) {
+    const { id: userId }: Partial<User> = req.user;
+
+    return this.userService.getChoices(userId, pagination);
+  }
+
+  @Get('favourites')
+  async getFavoriteRecipes(
+    @Request() req,
+    @Param() pagination: ArrayPagination,
+  ) {
+    const { id: userId }: Partial<User> = req.user;
+
+    return this.userService.getFavoriteRecipes(userId, pagination);
+  }
+
+  @Get('login/:login')
+  async findByLogin(@Param('login') login: string) {
+    return this.userService.findByLogin(login);
+  }
+
+  @Delete('recommendations/:recipeId')
+  async removeRecommendation(
+    @Param('recipeId') recipeId: string,
+    @Request() req,
+  ) {
+    const { id: userId }: Partial<User> = req.user;
+
+    return this.userService.removeRecommendation(userId, recipeId);
+  }
+
+  @Delete('favourite/:recipeId')
+  async removeFavorite(@Request() req, @Param('recipeId') recipeId) {
+    const { id: userId }: Partial<User> = req.user;
+
+    return this.userService.removeFavoriteRecipe(userId, recipeId);
+  }
+
   @Get()
-  async findAll() {
-    return this.userService.findAll();
+  async getUser(@Request() req) {
+    return req.user;
   }
 
   @Get(':id')

@@ -1,6 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { MongoPagination } from '@algoan/nestjs-pagination';
+
 import { CategoryService } from '../category/category.service';
 import { IngredientService } from '../ingredient/ingredient.service';
 import { ItemService } from '../item/item.service';
@@ -18,18 +20,6 @@ export class RecipeService {
   ) {}
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
     try {
-      const exist = await this.recipeModel
-        .findOne({
-          name: createRecipeDto.name,
-        })
-        .exec();
-
-      if (exist) {
-        throw new ConflictException(
-          `Recipe with name '${createRecipeDto.name}' already exist.`,
-        );
-      }
-
       const categories = await Promise.all(
         createRecipeDto.categories.map(async (cat) => {
           const isCat = await this.categoryService.findByName(cat.name);
@@ -76,12 +66,28 @@ export class RecipeService {
     }
   }
 
-  async findAll(): Promise<Recipe[]> {
-    return this.recipeModel.find({}).exec();
+  async findAll(pagination: MongoPagination): Promise<{
+    totalResources: number;
+    resources: Recipe[];
+  }> {
+    const resources = await this.recipeModel
+      .find({})
+      .setOptions(pagination)
+      .exec();
+
+    const totalResources = await this.recipeModel
+      .count(pagination.filter)
+      .exec();
+
+    return { totalResources, resources };
   }
 
   async findById(id: string): Promise<Recipe> {
     return this.recipeModel.findById(id).exec();
+  }
+
+  async findByIds(ids: string[]): Promise<Recipe[]> {
+    return this.recipeModel.find({ _id: { $in: ids } }).exec();
   }
 
   async findByName(name: string) {
