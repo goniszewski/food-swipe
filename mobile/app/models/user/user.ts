@@ -1,9 +1,6 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
-import { RecipeModel } from "../recipe/recipe"
+// import { RecipeModel } from "../recipe/recipe"
 
-/**
- * Model description here for TypeScript hints.
- */
 export const UserModel = types.model("User").props({
   id: types.identifier,
   login: types.string,
@@ -18,7 +15,7 @@ export const UserModel = types.model("User").props({
   defaultVegetarian: types.maybe(types.boolean),
   defaultGlutenFree: types.maybe(types.boolean),
   defaultNotRaw: types.maybe(types.boolean),
-  allergiesTo: types.array(types.string),
+  allergyTo: types.array(types.string),
   debug: types.maybe(types.boolean),
 })
 // .views((self) => ({}))

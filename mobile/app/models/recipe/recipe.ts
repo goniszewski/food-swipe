@@ -43,7 +43,6 @@ export const RecipeModel = types.model("Recipe").props({
   categories: types.maybe(types.array(Category)),
   tags: types.maybeNull(types.array(types.string)),
   isVegan: types.maybe(types.boolean),
-  isCheap: types.maybe(types.boolean),
   isVegetarian: types.maybe(types.boolean),
   author: types.string,
   recipeUrl: types.string,

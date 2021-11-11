@@ -4,10 +4,18 @@ import { GetRecipesResult, GetRecipeResult } from "./api.types"
 import { getGeneralApiProblem } from "./api-problem"
 import { GetUserResult } from "."
 
-const defaultPagination = {
+export class AddUserRecipeInteraction {
+  recipeId: string
+  timestamp: Date
+  source: string
+}
+
+const DEFAULT_PAGINATION = {
   page: 1,
   limit: 20,
 }
+
+const SOURCE = "mobile"
 
 export class UserApi {
   private api: Api
@@ -34,8 +42,8 @@ export class UserApi {
     }
   }
   async getRecommendations(
-    page = defaultPagination.page,
-    limit = defaultPagination.limit,
+    page = DEFAULT_PAGINATION.page,
+    limit = DEFAULT_PAGINATION.limit,
   ): Promise<GetRecipesResult> {
     try {
       const response: ApiResponse<any> = await this.api.apisauce.get(
@@ -58,8 +66,8 @@ export class UserApi {
   }
 
   async getFavourites(
-    page = defaultPagination.page,
-    limit = defaultPagination.limit,
+    page = DEFAULT_PAGINATION.page,
+    limit = DEFAULT_PAGINATION.limit,
   ): Promise<GetRecipesResult> {
     try {
       const response: ApiResponse<any> = await this.api.apisauce.get(
@@ -81,11 +89,17 @@ export class UserApi {
     }
   }
 
-  async addChoice(recipeId: string): Promise<GetUserResult> {
+  async addChoice(recipeId: string): Promise<any> {
+    const payload: AddUserRecipeInteraction = {
+      recipeId,
+      timestamp: new Date(),
+      source: SOURCE,
+    }
+
     try {
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         "http://localhost:9000/user/choices",
-        { recipeId },
+        payload,
       )
 
       if (!response.ok) {
@@ -103,10 +117,16 @@ export class UserApi {
   }
 
   async addFavourite(recipeId: string): Promise<GetUserResult> {
+    const payload: AddUserRecipeInteraction = {
+      recipeId,
+      timestamp: new Date(),
+      source: SOURCE,
+    }
+
     try {
       const response: ApiResponse<any> = await this.api.apisauce.patch(
         "http://localhost:9000/user/favourites",
-        { recipeId },
+        payload,
       )
 
       if (!response.ok) {

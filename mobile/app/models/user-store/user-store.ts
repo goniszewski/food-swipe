@@ -23,6 +23,9 @@ export const UserStoreModel = types
     saveChoices: (choicesHistory) => {
       self.user = { ...self.user, choicesHistory }
     },
+    addChoice: (choice) => {
+      self.user = self.user.choicesHistory.push(choice)
+    },
   }))
   .actions((self) => ({
     getUser: async () => {
@@ -37,8 +40,8 @@ export const UserStoreModel = types
     },
 
     getRecommendations: async () => {
-      const recipesApi = new UserApi(self.environment.api)
-      const result = await recipesApi.getRecommendations()
+      const userApi = new UserApi(self.environment.api)
+      const result = await userApi.getRecommendations()
 
       if (result.kind === "ok") {
         self.saveRecommendations(result.recipes)
