@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
 import { Allergens } from 'src/shared/constants/allergens.enum';
+import { UserRecipeInteraction } from './user-recipe-interaction.schema';
 
 @Schema({
   // toJSON: {
@@ -31,27 +32,27 @@ export class User {
   @Prop({ trim: true })
   name: string;
 
-  @Prop({
-    type: [
-      {
-        type: MongooseSchema.Types.ObjectId,
-        ref: 'Recipe',
-        autopopulate: false,
-      },
-    ],
-  })
-  favourites?: Recipe[];
+  // @Prop({
+  //   type: [
+  //     {
+  //       type: MongooseSchema.Types.ObjectId,
+  //       ref: 'UserRecipeInteraction',
+  //       autopopulate: false,
+  //     },
+  //   ],
+  // })
+  // favourites?: UserRecipeInteraction[];
 
-  @Prop({
-    type: [
-      {
-        type: MongooseSchema.Types.ObjectId,
-        ref: 'Recipe',
-        autopopulate: false,
-      },
-    ],
-  })
-  choicesHistory?: Recipe[];
+  // @Prop({
+  //   type: [
+  //     {
+  //       type: MongooseSchema.Types.ObjectId,
+  //       ref: 'UserRecipeInteraction',
+  //       autopopulate: false,
+  //     },
+  //   ],
+  // })
+  // choicesHistory?: UserRecipeInteraction[];
 
   @Prop({
     type: [
@@ -77,7 +78,7 @@ export class User {
   defaultNotRaw?: boolean;
 
   @Prop()
-  allergiesTo?: Allergens[];
+  allergyTo?: Allergens[];
 
   @Prop()
   debug?: boolean;

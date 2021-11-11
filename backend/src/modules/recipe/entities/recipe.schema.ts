@@ -67,9 +67,6 @@ export class Recipe {
   isVegetarian?: boolean;
 
   @Prop()
-  isCheap?: boolean;
-
-  @Prop()
   isGlutenFree?: boolean;
 
   @Prop()

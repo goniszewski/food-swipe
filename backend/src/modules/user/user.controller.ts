@@ -16,6 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { User } from './entities/user.schema';
 import ArrayPagination from 'src/shared/interfaces/array-pagination.interface';
+import { AddUserRecipeInteractionDto } from './dto/add-user-recipe-interaction.dto';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -27,6 +28,31 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Patch('choices')
+  async addChoice(@Request() req, @Body() body) {
+    const { id: userId }: Partial<User> = req.user;
+    const { recipeId, timestamp, source } = body;
+
+    return this.userService.addChoice({ userId, recipeId, timestamp, source });
+  }
+
+  @Patch('favourites')
+  async addFavorite(@Request() req, @Body() body) {
+    const { id: userId }: Partial<User> = req.user;
+    const {
+      recipeId,
+      timestamp,
+      source,
+    }: Omit<AddUserRecipeInteractionDto, 'userId'> = body;
+
+    return this.userService.addFavoriteRecipe({
+      userId,
+      recipeId,
+      timestamp,
+      source,
+    });
+  }
+
   @Patch('recommendations')
   async addRecommendations(
     @Request() req,
@@ -34,30 +60,6 @@ export class UserController {
   ) {
     const { id: userId }: Partial<User> = req.user;
     return this.userService.addRecommendations(userId, recommendationIds);
-  }
-
-  @Patch('choices')
-  async addChoice(@Request() req, @Body() body) {
-    const { id: userId }: Partial<User> = req.user;
-    const { recipeId } = body;
-
-    return this.userService.addChoice(userId, recipeId);
-  }
-
-  @Patch('favourites')
-  async addFavorite(@Request() req, @Body() body) {
-    const { id: userId }: Partial<User> = req.user;
-    const { recipeId } = body;
-
-    return this.userService.addFavoriteRecipe(userId, recipeId);
-  }
-
-  @Get('recommendations')
-  async getRecommendations(
-    @Param('id') id: string,
-    @Param() pagination: ArrayPagination,
-  ) {
-    return this.userService.getRecommendations(id, pagination);
   }
 
   @Get('choices')
@@ -75,6 +77,14 @@ export class UserController {
     const { id: userId }: Partial<User> = req.user;
 
     return this.userService.getFavoriteRecipes(userId, pagination);
+  }
+
+  @Get('recommendations')
+  async getRecommendations(
+    @Param('id') id: string,
+    @Param() pagination: ArrayPagination,
+  ) {
+    return this.userService.getRecommendations(id, pagination);
   }
 
   @Get('login/:login')

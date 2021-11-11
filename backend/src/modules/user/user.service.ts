@@ -1,17 +1,28 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { InteractionEventTypes } from 'src/shared/constants/interaction-event-types.enum';
+import { Recipe } from '../recipe/entities/recipe.schema';
 import { RecipeService } from '../recipe/recipe.service';
-import { AddChoiceDto } from './dto/add-add-choice.dto';
-import { AddRecommendationsDto } from './dto/add-recommendations.dto';
+import { AddUserRecipeInteractionDto } from './dto/add-user-recipe-interaction.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {
+  UserRecipeInteraction,
+  UserRecipeInteractionDocument,
+} from './entities/user-recipe-interaction.schema';
 import { User, UserDocument } from './entities/user.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(UserRecipeInteraction.name)
+    private userRecipeInteractionModel: Model<UserRecipeInteractionDocument>,
     private recipeService: RecipeService,
   ) {}
   public async create(createUserDto: CreateUserDto) {
@@ -19,20 +30,62 @@ export class UserService {
     return user;
   }
 
-  async addChoice(userId: string, recipeId: string) {
+  async addChoice({
+    userId,
+    recipeId,
+    timestamp = new Date(),
+    source,
+  }: AddUserRecipeInteractionDto) {
     const recipe = await this.recipeService.findById(recipeId);
     const user = await this.userModel.findById(userId);
 
     if (!recipe) {
-      throw new Error(`Recipe with id ${recipeId} doesn't exist.`);
+      throw new NotFoundException(`Recipe with id ${recipeId} doesn't exist.`);
     }
 
-    user.choicesHistory.push(recipe);
+    const choice = await new this.userRecipeInteractionModel({
+      user,
+      recipe,
+      timestamp,
+      source,
+      eventType: InteractionEventTypes.CHOICE,
+    }).save();
+
+    if (!choice) {
+      throw new InternalServerErrorException(
+        `Couldn't add recipe with id ${recipeId} as choice in DB.`,
+      );
+    }
+
     user.recommendedRecipes = user.recommendedRecipes.filter(
       (rec) => rec.id !== recipe.id,
     );
 
     return user.save();
+  }
+
+  async addFavoriteRecipe({
+    userId,
+    recipeId,
+    timestamp = new Date(),
+    source,
+  }: AddUserRecipeInteractionDto) {
+    const user = await this.userModel.findById(userId);
+    const recipe = await this.recipeService.findById(recipeId);
+
+    if (!recipe) {
+      throw new NotFoundException(`Recipe with id ${recipeId} doesn't exist.`);
+    }
+
+    const favourite = await new this.userRecipeInteractionModel({
+      user,
+      recipe,
+      timestamp,
+      source,
+      eventType: InteractionEventTypes.FAVORITE,
+    }).save();
+
+    return favourite;
   }
 
   async addRecommendations(userId: string, recommendationIds: string[]) {
@@ -49,43 +102,60 @@ export class UserService {
     return user.save();
   }
 
-  async addFavoriteRecipe(userId: string, recipeId: string) {
-    const user = await this.userModel.findById(userId);
-    const recipe = await this.recipeService.findById(recipeId);
-
-    user.favourites.push(recipe);
-
-    return user.save();
-  }
-
   async getChoices(
     userId: string,
     { page = 1, limit = 20 }: { page: number; limit: number },
   ) {
-    const { choicesHistory } = await this.userModel
-      .findById(userId)
-      .populate('choicesHistory')
+    const user = await this.userModel.findById(userId).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} doesn't exist.`);
+    }
+
+    const choiceInteractions = await this.userRecipeInteractionModel
+      .find({ user, eventType: InteractionEventTypes.CHOICE })
+      .populate('recipe')
       .exec();
 
+    const choicesHistory = choiceInteractions.map(
+      (interaction) => interaction.recipe,
+    );
+
     return choicesHistory.slice((page - 1) * limit, page * limit);
-  }
-
-  async getRecommendations(
-    userId: string,
-    { page = 1, limit = 20 }: { page: number; limit: number },
-  ) {
-    const { recommendedRecipes } = await (await this.userModel.findById(userId)).populated('recommendations').exec();
-
-    return recommendedRecipes.slice((page - 1) * limit, page * limit);
   }
 
   async getFavoriteRecipes(
     userId: string,
     { page = 1, limit = 20 }: { page: number; limit: number },
   ) {
-    const { favourites } = await this.userModel.findById(userId).exec();
+    const user = await this.userModel.findById(userId).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} doesn't exist.`);
+    }
+
+    const favouriteIntreractions = await this.userRecipeInteractionModel
+      .find({ user, eventType: InteractionEventTypes.FAVORITE })
+      .populate('recipe')
+      .exec();
+
+    const favourites = favouriteIntreractions.map(
+      (interaction) => interaction.recipe,
+    );
 
     return favourites.slice((page - 1) * limit, page * limit);
+  }
+
+  async getRecommendations(
+    userId: string,
+    { page = 1, limit = 20 }: { page: number; limit: number },
+  ) {
+    const { recommendedRecipes } = await this.userModel
+      .findById(userId)
+      .populate('recommendations')
+      .exec();
+
+    return recommendedRecipes.slice((page - 1) * limit, page * limit);
   }
 
   async findAll(): Promise<User[]> {
@@ -116,7 +186,11 @@ export class UserService {
 
   async removeFavoriteRecipe(userId: string, recipeId: string) {
     const user = await this.userModel.findById(userId);
-    user.favourites = user.favourites.filter((rec) => rec.id !== recipeId);
+    const recipe = await this.recipeService.findById(recipeId);
+
+    await this.userRecipeInteractionModel
+      .deleteOne({ user, recipe, eventType: InteractionEventTypes.FAVORITE })
+      .exec();
 
     return user.save();
   }

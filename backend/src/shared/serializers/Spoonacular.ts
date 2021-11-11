@@ -29,7 +29,6 @@ const converter = (data) => {
     isVegan: data.vegan,
     isVegetarian: data.vegetarian,
     isGlutenFree: data.glutenFree,
-    isCheap: data.cheap,
     description: data.summary,
     ingredients: ingredients,
     categories: data.dishTypes,
