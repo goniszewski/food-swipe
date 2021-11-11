@@ -62,7 +62,10 @@ export class UserService {
     userId: string,
     { page = 1, limit = 20 }: { page: number; limit: number },
   ) {
-    const { choicesHistory } = await this.userModel.findById(userId).exec();
+    const { choicesHistory } = await this.userModel
+      .findById(userId)
+      .populate('choicesHistory')
+      .exec();
 
     return choicesHistory.slice((page - 1) * limit, page * limit);
   }
@@ -71,7 +74,7 @@ export class UserService {
     userId: string,
     { page = 1, limit = 20 }: { page: number; limit: number },
   ) {
-    const { recommendedRecipes } = await this.userModel.findById(userId).exec();
+    const { recommendedRecipes } = await (await this.userModel.findById(userId)).populated('recommendations').exec();
 
     return recommendedRecipes.slice((page - 1) * limit, page * limit);
   }
