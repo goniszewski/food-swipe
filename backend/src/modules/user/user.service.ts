@@ -8,6 +8,9 @@ import { Model } from 'mongoose';
 import { InteractionEventTypes } from 'src/shared/constants/interaction-event-types.enum';
 import { Recipe } from '../recipe/entities/recipe.schema';
 import { RecipeService } from '../recipe/recipe.service';
+import { RecommenderChoice } from '../recommender/models/recommender-choice';
+import { RecommenderUser } from '../recommender/models/recommender-user';
+import { RecommenderService } from '../recommender/recommender.service';
 import { AddUserRecipeInteractionDto } from './dto/add-user-recipe-interaction.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,9 +27,17 @@ export class UserService {
     @InjectModel(UserRecipeInteraction.name)
     private userRecipeInteractionModel: Model<UserRecipeInteractionDocument>,
     private recipeService: RecipeService,
+    private recommenderService: RecommenderService,
   ) {}
   public async create(createUserDto: CreateUserDto) {
-    const user = <User>await new this.userModel(createUserDto).save();
+    const user = await new this.userModel(createUserDto).save();
+
+    const recommenderResponse = await this.recommenderService.sendUser(user);
+
+    if (!recommenderResponse) {
+      console.error(`User ${user.id} was not added to Recommender.`);
+    }
+
     return user;
   }
 
@@ -55,6 +66,14 @@ export class UserService {
       throw new InternalServerErrorException(
         `Couldn't add recipe with id ${recipeId} as choice in DB.`,
       );
+    }
+
+    const recommenderResponse = await this.recommenderService.sendChoice(
+      choice,
+    );
+
+    if (!recommenderResponse) {
+      console.error(`Choice ${choice.id} was not added to Recommender.`);
     }
 
     user.recommendedRecipes = user.recommendedRecipes.filter(
@@ -158,16 +177,24 @@ export class UserService {
     return recommendedRecipes.slice((page - 1) * limit, page * limit);
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserDocument[]> {
     return this.userModel.find({}).exec();
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: string): Promise<UserDocument> {
     return this.userModel.findById(id).exec();
   }
 
   async findByLogin(login: string) {
     return await this.userModel.findOne({ login }).exec();
+  }
+
+  async findAllInteractionsByType(type: InteractionEventTypes) {
+    return await this.userRecipeInteractionModel
+      .find({ eventType: type })
+      .populate('user')
+      .populate('recipe')
+      .exec();
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

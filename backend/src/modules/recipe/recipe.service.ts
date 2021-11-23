@@ -9,6 +9,8 @@ import { ItemService } from '../item/item.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { Recipe, RecipeDocument } from './entities/recipe.schema';
+import { RecommenderRecipe } from '../recommender/models/recommender-recipe';
+import { RecommenderService } from '../recommender/recommender.service';
 
 @Injectable()
 export class RecipeService {
@@ -17,6 +19,7 @@ export class RecipeService {
     private categoryService: CategoryService,
     private ingredientService: IngredientService,
     private itemService: ItemService,
+    private recommenderService: RecommenderService,
   ) {}
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
     try {
@@ -66,7 +69,11 @@ export class RecipeService {
     }
   }
 
-  async findAll(pagination: MongoPagination): Promise<{
+  async findAll(): Promise<RecipeDocument[]> {
+    return this.recipeModel.find({}).exec();
+  }
+
+  async findAllPaginated(pagination: MongoPagination): Promise<{
     totalResources: number;
     resources: Recipe[];
   }> {
@@ -100,5 +107,18 @@ export class RecipeService {
 
   async remove(id: string) {
     return this.recipeModel.findByIdAndRemove(id);
+  }
+
+  async sendRecipesToRecommender(recipes: RecipeDocument[]): Promise<any[]> {
+    const recommenderResponses = await this.recommenderService.sendRecipes(
+      recipes,
+    );
+
+    return recommenderResponses;
+  }
+
+  async generaterateRecipesCSV() {
+    const recipes = await this.findAll();
+    return this.recommenderService.generateRecipesCSV(recipes);
   }
 }

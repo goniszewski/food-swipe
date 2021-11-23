@@ -25,7 +25,7 @@ export class UserRecipeInteraction {
   recipe: Recipe;
 
   @Prop()
-  timestamp: InteractionEventTypes;
+  timestamp: Date;
 
   @Prop()
   eventType: InteractionEventTypes;

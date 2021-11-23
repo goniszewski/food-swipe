@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   public async validate(payload: any) {
-    const login = <string>payload['cognito:username'];
+    const login: string = payload['cognito:username'];
     const user = await this.userService.findByLogin(login);
 
     if (!user) {

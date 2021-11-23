@@ -6,6 +6,7 @@ import { Recipe, RecipeSchema } from './entities/recipe.schema';
 import { CategoryModule } from '../category/category.module';
 import { IngredientModule } from '../ingredient/ingredient.module';
 import { ItemModule } from '../item/item.module';
+import { RecommenderModule } from '../recommender/recommender.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ItemModule } from '../item/item.module';
     CategoryModule,
     IngredientModule,
     ItemModule,
+    RecommenderModule,
   ],
   controllers: [RecipeController],
   providers: [RecipeService],

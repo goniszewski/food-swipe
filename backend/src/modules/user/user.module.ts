@@ -8,6 +8,7 @@ import {
   UserRecipeInteraction,
   UserRecipeInteractionSchema,
 } from './entities/user-recipe-interaction.schema';
+import { RecommenderModule } from '../recommender/recommender.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import {
       { name: UserRecipeInteraction.name, schema: UserRecipeInteractionSchema },
     ]),
     RecipeModule,
+    RecommenderModule,
   ],
   controllers: [UserController],
   providers: [UserService],

@@ -25,6 +25,11 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
+  @Get('generate-csv')
+  async generateCSV() {
+    return this.recipeService.generaterateRecipesCSV();
+  }
+
   @Post()
   async create(@Body() createRecipeDto: CreateRecipeDto) {
     return this.recipeService.create(createRecipeDto);
@@ -33,7 +38,7 @@ export class RecipeController {
   @UseInterceptors(new LinkHeaderInterceptor({ resource: '' }))
   @Get()
   async findAll(@MongoPaginationParamDecorator() pagination: MongoPagination) {
-    const paginatedData = await this.recipeService.findAll(pagination);
+    const paginatedData = await this.recipeService.findAllPaginated(pagination);
 
     return paginatedData;
   }

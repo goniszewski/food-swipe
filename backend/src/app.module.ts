@@ -10,6 +10,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { DataFetcherModule } from './modules/data-fetcher/data-fetcher.module';
 import { ItemModule } from './modules/item/item.module';
 import { RecipeModule } from './modules/recipe/recipe.module';
+import { RecommenderModule } from './modules/recommender/recommender.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -40,6 +41,7 @@ import { UserModule } from './modules/user/user.module';
     UserModule,
     DataFetcherModule,
     AuthModule,
+    RecommenderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

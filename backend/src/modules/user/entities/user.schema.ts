@@ -66,16 +66,10 @@ export class User {
   recommendedRecipes?: Recipe[];
 
   @Prop()
-  defaultVegan?: boolean;
+  defaultVegan: boolean;
 
   @Prop()
-  defaultVegetarian?: boolean;
-
-  @Prop()
-  defaultGlutenFree?: boolean;
-
-  @Prop()
-  defaultNotRaw?: boolean;
+  defaultVegetarian: boolean;
 
   @Prop()
   allergyTo?: Allergens[];
