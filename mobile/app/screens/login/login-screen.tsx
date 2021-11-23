@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { View } from "react-native"
 import styled, { css } from "@emotion/native"
@@ -8,8 +8,9 @@ import { NavigatorParamList } from "../../navigators"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
 import { color } from "../../theme"
-import { Input } from "react-native-elements/dist/input/Input"
-import { Button, Text } from "react-native-elements"
+import { Button, Text, Input } from "react-native-elements"
+import { useStores } from "../../models"
+import { Tokens } from "../../services/api"
 
 const WideView = styled.View`
   align-items: center;
@@ -28,22 +29,53 @@ const styles = {
 
 export const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = observer(
   ({ navigation }) => {
-    // Pull in one of our MST stores
-    // const { someStore, anotherStore } = useStores()
+    const [loading, setLoading] = useState(false)
+    const [formData, setFormData] = useState({
+      login: "",
+      password: "",
+    })
 
-    // Pull in navigation via hook
-    // const navigation = useNavigation()
+    const { authStore } = useStores()
+    const { tokens }: { tokens: Tokens } = authStore
+
+    const handleLogin = async () => {
+      setLoading(true)
+      const response = await authStore.login(formData)
+
+      if (response === "ok") {
+        return navigation.navigate("recommendations")
+      }
+    }
+
+    const onInputChange = (field: string, value: string) => {
+      setFormData((prevState) => {
+        return {
+          ...prevState,
+          [field]: value,
+        }
+      })
+    }
+
     return (
       <Screen style={styles.root} preset="fixed">
         <WideView>
           <Text h1>FoodSwipe</Text>
         </WideView>
         <WideView>
-          <Input placeholder="Login" />
-          <Input placeholder="Password" secureTextEntry />
+          <Input
+            placeholder="Login"
+            value={formData.login}
+            onChangeText={(v) => onInputChange("login", v)}
+          />
+          <Input
+            placeholder="Password"
+            value={formData.password}
+            onChangeText={(v) => onInputChange("password", v)}
+            secureTextEntry
+          />
         </WideView>
         <WideView>
-          <Button title="Sign in" onPress={() => navigation.navigate("recommendations")} />
+          <Button title="Sign in" onPress={handleLogin} />
         </WideView>
       </Screen>
     )
