@@ -1,6 +1,7 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { RefreshAuthDto } from './dto/refresh-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 
 @Controller('auth')
@@ -19,6 +20,14 @@ export class AuthController {
   async login(@Body() loginAuthDto: LoginAuthDto) {
     try {
       return await this.authService.login(loginAuthDto);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
+  }
+  @Post('refresh')
+  async refresh(@Body() refreshAuthDto: RefreshAuthDto) {
+    try {
+      return await this.authService.refreshToken(refreshAuthDto);
     } catch (e) {
       throw new BadRequestException(e.message);
     }

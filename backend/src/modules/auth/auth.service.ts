@@ -6,12 +6,14 @@ import {
   CognitoUserPool,
   CognitoUserSession,
   ICognitoUserPoolData,
+  CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { RefreshAuthDto } from './dto/refresh-auth.dto';
 
 // const poolData: ICognitoUserPoolData = {
 //   UserPoolId: '{ userPoolId }',
@@ -96,6 +98,35 @@ export class AuthService {
             reject(err);
           },
         });
+      },
+    );
+
+    const response = {
+      token: cognitoResponse.getIdToken().getJwtToken(),
+      tokenExp: cognitoResponse.getIdToken().getExpiration(),
+      refreshToken: cognitoResponse.getRefreshToken().getToken(),
+    };
+    return response;
+  }
+
+  async refreshToken({ login, refreshToken }: RefreshAuthDto) {
+    const userData = {
+      Username: login,
+      Pool: this.userPool,
+    };
+    const user = new CognitoUser(userData);
+    const cognitoResponse: CognitoUserSession = await new Promise(
+      (resolve, reject) => {
+        return user.refreshSession(
+          new CognitoRefreshToken({ RefreshToken: refreshToken }),
+          (err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          },
+        );
       },
     );
 
