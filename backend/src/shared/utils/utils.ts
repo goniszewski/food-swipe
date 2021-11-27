@@ -11,5 +11,18 @@ export const chunk = (arr: any[], size = 1) => {
   while (index < length) {
     result[resIndex++] = arr.slice(index, (index += size));
   }
+
   return result;
+};
+
+export const shuffleArray = (array: any[]) => {
+  const tempArray = array;
+  for (let i = tempArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = tempArray[i];
+    tempArray[i] = tempArray[j];
+    tempArray[j] = temp;
+  }
+
+  return tempArray;
 };

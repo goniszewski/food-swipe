@@ -70,6 +70,9 @@ export class Recipe {
   isGlutenFree?: boolean;
 
   @Prop()
+  allergens?: string[]; // TODO populate allergens based on item's 'isAllergen'
+
+  @Prop()
   author: string;
 
   @Prop()

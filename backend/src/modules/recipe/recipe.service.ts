@@ -101,6 +101,23 @@ export class RecipeService {
     return this.recipeModel.findOne({ name }).exec();
   }
 
+  async findRandomRecipes(
+    limit: number,
+    userPreferences: {
+      allergens: string[];
+      isVegan?: boolean;
+      isVegetarian?: boolean;
+    },
+  ): Promise<Recipe[]> {
+    const { allergens, ...rest } = userPreferences;
+    const recipes = await this.recipeModel
+      .find({ ...rest, allergens: { $nin: allergens } })
+      // .aggregate([{ $sample: { size: limit } }])
+      .exec();
+
+    return recipes;
+  }
+
   async update(id: string, updateRecipeDto: UpdateRecipeDto) {
     return this.recipeModel.findByIdAndUpdate(id, updateRecipeDto).exec();
   }

@@ -29,6 +29,21 @@ export class UserService {
     private recipeService: RecipeService,
     private recommenderService: RecommenderService,
   ) {}
+
+  async getPreferences(userId: string) {
+    const user = await this.userModel.findById(userId).exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} doesn't exist.`);
+    }
+
+    const preferences = { allergens: user.allergyTo };
+
+    if (user.defaultVegan) preferences['isVegan'] = true;
+    if (user.defaultVegetarian) preferences['isVegetarian'] = true;
+
+    return preferences;
+  }
   public async create(createUserDto: CreateUserDto) {
     const user = await new this.userModel(createUserDto).save();
 
@@ -71,6 +86,8 @@ export class UserService {
     const recommenderResponse = await this.recommenderService.sendChoice(
       choice,
     );
+
+    console.log({ recommenderResponse });
 
     if (!recommenderResponse) {
       console.error(`Choice ${choice.id} was not added to Recommender.`);
@@ -175,6 +192,27 @@ export class UserService {
       .exec();
 
     return recommendedRecipes.slice((page - 1) * limit, page * limit);
+  }
+
+  async getRecommendationsOrRandom(
+    userId: string,
+    { page = 1, limit = 20 }: { page: number; limit: number },
+  ) {
+    const recommendations = await this.getRecommendations(userId, {
+      page,
+      limit,
+    });
+
+    if (recommendations.length === 0) {
+      const userPreferences = await this.getPreferences(userId);
+
+      const randomRecipes = await this.recipeService.findRandomRecipes(
+        limit,
+        userPreferences,
+      );
+      return randomRecipes;
+    }
+    return recommendations;
   }
 
   async findAll(): Promise<UserDocument[]> {
