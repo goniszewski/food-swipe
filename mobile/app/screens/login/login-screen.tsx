@@ -43,6 +43,7 @@ export const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = ob
       const response = await authStore.login(formData)
 
       if (response === "ok") {
+        setLoading(false)
         return navigation.navigate("recommendations")
       }
     }

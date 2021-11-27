@@ -26,7 +26,9 @@ export const AuthStoreModel = types
       const result = await authApi.login({ login, password })
 
       if (result.kind === "ok") {
-        await SecureStore.setItemAsync("tokens", JSON.stringify(result.tokens))
+        await SecureStore.setItemAsync("token", JSON.stringify(result.tokens.token))
+        await SecureStore.setItemAsync("refreshToken", JSON.stringify(result.tokens.refreshToken))
+        await SecureStore.setItemAsync("tokenExp", JSON.stringify(result.tokens.tokenExp))
         self.saveTokens(result.tokens)
 
         return "ok"
