@@ -1,5 +1,4 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
-// import { RecipeModel } from "../recipe/recipe"
 
 export const AuthModel = types.model("Auth").props({
   token: types.string,

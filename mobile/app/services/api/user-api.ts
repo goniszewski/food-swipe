@@ -47,7 +47,7 @@ export class UserApi {
   ): Promise<GetRecipesResult> {
     try {
       const response: ApiResponse<any> = await this.api.apisauce.get(
-        `http://localhost:9000/users/recommendations/`,
+        `http://localhost:9000/user/recommendations/`,
         { page, limit },
       )
 
@@ -57,6 +57,7 @@ export class UserApi {
       }
 
       const recipes = response.data
+
 
       return { kind: "ok", recipes }
     } catch (e) {
@@ -71,7 +72,7 @@ export class UserApi {
   ): Promise<GetRecipesResult> {
     try {
       const response: ApiResponse<any> = await this.api.apisauce.get(
-        `http://localhost:9000/users/favourites/`,
+        `http://localhost:9000/user/favourites/`,
         { page, limit },
       )
 
@@ -101,6 +102,8 @@ export class UserApi {
         "http://localhost:9000/user/choices",
         payload,
       )
+
+      console.log(response)
 
       if (!response.ok) {
         const problem = getGeneralApiProblem(response)

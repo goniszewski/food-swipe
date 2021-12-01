@@ -2,7 +2,7 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { RecipeStoreModel } from "../recipe-store/recipe-store"
 import { CharacterStoreModel } from "../character-store/character-store"
 import { UserStoreModel } from "../user-store/user-store"
-import { AuthStoreModel } from ".."
+import { AuthStoreModel } from "../auth-store/auth-store"
 
 /**
  * A RootStore model.

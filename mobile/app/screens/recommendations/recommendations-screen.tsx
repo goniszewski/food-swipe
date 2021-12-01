@@ -10,7 +10,7 @@ import { NavigatorParamList } from "../../navigators"
 // import { useStores } from "../../models"
 import { color } from "../../theme"
 import { Button, Text, Tile, Badge, Icon } from "react-native-elements"
-import { Recipe, useStores } from "../../models"
+import { Recipe, User, useStores } from "../../models"
 
 const WideView = styled.View`
   align-items: center;
@@ -53,25 +53,28 @@ export const RecommendationsScreen: FC<
   StackScreenProps<NavigatorParamList, "recommendations">
 > = observer(({ navigation }) => {
   const { recipeStore, userStore } = useStores()
-  const { recipes }: { recipes: Recipe[] } = recipeStore
+  // const { recipes }: { recipes: Recipe[] } = recipeStore
+  const { user }: { user: User } = userStore
+  const { fetchedRecommendedRecipes } = user
 
   useEffect(() => {
-    async function fetchData() {
-      await recipeStore.getRecipes()
+    console.log("typeof user.fetchedRecommendedRecipes", typeof user.fetchedRecommendedRecipes)
+    if (user.fetchedRecommendedRecipes) {
+      ;(async () => {
+        await userStore.getRecommendations()
+      })()
     }
-
-    fetchData()
-  }, [recipes])
+  }, [user.recommendedRecipes])
 
   const onApprove = async (index: number) => {
-    const { id } = recipes[index]
+    const { id } = fetchedRecommendedRecipes[index]
     console.info(`Approving recipe with id ${id}`)
 
     return userStore.approveRecipe(id)
   }
 
   const onReject = async (index: number) => {
-    const { id } = recipes[index]
+    const { id } = fetchedRecommendedRecipes[index]
     console.info(`Rejecting recipe with id ${id}`)
 
     return userStore.rejectRecipe(id)
@@ -81,9 +84,9 @@ export const RecommendationsScreen: FC<
     <Screen style={styles.root} preset="fixed">
       <WideView>
         <Text h1>Some Recipes</Text>
-        <Text>Found {recipes.length} recipes</Text>
+        <Text>Found {fetchedRecommendedRecipes.length} recipes</Text>
         <CardsSwipe
-          cards={[...recipes]}
+          cards={[...fetchedRecommendedRecipes]}
           cardContainerStyle={styles.recipeContainer}
           renderCard={(recipe) => (
             <View style={styles.root}>

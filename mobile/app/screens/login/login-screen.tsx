@@ -34,13 +34,22 @@ export const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = ob
       login: "",
       password: "",
     })
+    const [error, setError] = useState(null)
 
     const { authStore } = useStores()
-    const { tokens }: { tokens: Tokens } = authStore
+    // const { tokens }: { tokens: Tokens } = authStore
 
     const handleLogin = async () => {
       setLoading(true)
       const response = await authStore.login(formData)
+
+      setTimeout(() => {
+        setLoading(false)
+
+        if (response === "rejected") {
+          setError("Wrong credentials.")
+        }
+      }, 2000)
 
       if (response === "ok") {
         setLoading(false)
@@ -67,16 +76,19 @@ export const LoginScreen: FC<StackScreenProps<NavigatorParamList, "login">> = ob
             placeholder="Login"
             value={formData.login}
             onChangeText={(v) => onInputChange("login", v)}
+            autoCapitalize="none"
           />
           <Input
             placeholder="Password"
             value={formData.password}
             onChangeText={(v) => onInputChange("password", v)}
+            autoCapitalize="none"
             secureTextEntry
           />
+          {error && <Text style={{ color: "red" }}>{error}</Text>}
         </WideView>
         <WideView>
-          <Button title="Sign in" onPress={handleLogin} />
+          <Button title="Sign in" onPress={handleLogin} loading={loading} disabled={loading} />
         </WideView>
       </Screen>
     )

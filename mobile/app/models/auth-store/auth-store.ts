@@ -34,7 +34,8 @@ export const AuthStoreModel = types
         return "ok"
       } else {
         __DEV__ && console.tron.log(result.kind)
-        return "error"
+        console.log(result)
+        return result.kind
       }
     },
   })) // eslint-disable-line @typescript-eslint/no-unused-vars

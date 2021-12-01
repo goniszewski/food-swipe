@@ -46,14 +46,14 @@ export class Api {
   }
 
   async setup() {
+    const token = await this.getToken()
     // construct the apisauce instance
     this.apisauce = create({
       baseURL: this.config.url,
       timeout: this.config.timeout,
       headers: {
         Accept: "application/json",
-        Authorization:
-          `bearer ${await this.getToken()}`,
+        Authorization: token ? `bearer ${JSON.parse(token)}` : undefined,
       },
     })
   }

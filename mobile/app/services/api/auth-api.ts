@@ -25,7 +25,6 @@ export class AuthApi {
         "http://localhost:9000/auth/login",
         payload,
       )
-      console.log({ response })
 
       // the typical ways to die when calling an api
       if (!response.ok) {

@@ -17,8 +17,8 @@ export const UserStoreModel = types
     saveUser: (userSnapshot: UserSnapshot) => {
       self.user = { ...userSnapshot }
     },
-    saveRecommendations: (recommendedRecipes) => {
-      self.user = { ...self.user, recommendedRecipes }
+    saveRecommendations: (fetchedRecommendedRecipes) => {
+      self.user = { ...self.user, fetchedRecommendedRecipes }
     },
     saveChoices: (choicesHistory) => {
       self.user = { ...self.user, choicesHistory }

@@ -1,4 +1,5 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { RecipeModel } from "../recipe/recipe"
 // import { RecipeModel } from "../recipe/recipe"
 
 export const UserModel = types.model("User").props({
@@ -11,6 +12,7 @@ export const UserModel = types.model("User").props({
   favourites: types.array(types.string),
   choicesHistory: types.array(types.string),
   recommendedRecipes: types.array(types.string),
+  fetchedRecommendedRecipes: types.maybe(types.array(RecipeModel)),
   defaultVegan: types.maybe(types.boolean),
   defaultVegetarian: types.maybe(types.boolean),
   defaultGlutenFree: types.maybe(types.boolean),
