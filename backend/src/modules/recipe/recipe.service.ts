@@ -108,12 +108,26 @@ export class RecipeService {
       isVegan?: boolean;
       isVegetarian?: boolean;
     },
-  ): Promise<Recipe[]> {
+  ): Promise<any[]> {
     const { allergens, ...rest } = userPreferences;
+
     const recipes = await this.recipeModel
-      .find({ ...rest, allergens: { $nin: allergens } })
-      // .aggregate([{ $sample: { size: limit } }])
-      .exec();
+      .aggregate([
+        { $match: { ...rest, allergens: { $nin: allergens } } },
+        { $sample: { size: limit } },
+      ])
+      .exec()
+      .then(async (recipes) =>
+        Promise.all(
+          recipes.map(async (recipe) =>
+            (
+              await (
+                await new this.recipeModel(recipe).populate('ingredients')
+              ).populate('categories')
+            ).toJSON(),
+          ),
+        ),
+      );
 
     return recipes;
   }

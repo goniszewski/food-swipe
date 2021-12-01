@@ -33,6 +33,8 @@ export class UserController {
     const { id: userId }: Partial<User> = req.user;
     const { recipeId, timestamp, source } = body;
 
+    console.log(body);
+
     return this.userService.addChoice({ userId, recipeId, timestamp, source });
   }
 
@@ -81,10 +83,14 @@ export class UserController {
 
   @Get('recommendations')
   async getRecommendations(
-    @Param('id') id: string,
     @Param() pagination: ArrayPagination,
+    @Request() req,
   ) {
-    return this.userService.getRecommendations(id, pagination);
+    const { id: userId }: Partial<User> = req.user;
+
+    console.log({ userId, pagination });
+
+    return this.userService.getRecommendationsOrRandom(userId, pagination);
   }
 
   @Get('login/:login')

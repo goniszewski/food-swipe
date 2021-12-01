@@ -311,7 +311,7 @@ export class RecommenderService {
     const putEventCommand = new PutEventsCommand({
       userId: choiceObject.user.id,
       trackingId: this.configService.get('PERSONALIZE_EVENT_TRACKING_ID'),
-      sessionId: undefined,
+      sessionId: (Date.now() / 100).toString(),
       eventList: [
         {
           eventType: choiceObject.eventType,

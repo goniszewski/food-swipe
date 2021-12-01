@@ -87,10 +87,10 @@ export class UserService {
       choice,
     );
 
-    console.log({ recommenderResponse });
-
-    if (!recommenderResponse) {
-      console.error(`Choice ${choice.id} was not added to Recommender.`);
+    if (recommenderResponse?.$metadata.httpStatusCode !== 200) {
+      console.error(
+        `Encountered an error while adding choice ${choice.id} to Recommender.`,
+      );
     }
 
     user.recommendedRecipes = user.recommendedRecipes.filter(
@@ -188,7 +188,7 @@ export class UserService {
   ) {
     const { recommendedRecipes } = await this.userModel
       .findById(userId)
-      .populate('recommendations')
+      .populate('recommendedRecipes')
       .exec();
 
     return recommendedRecipes.slice((page - 1) * limit, page * limit);
