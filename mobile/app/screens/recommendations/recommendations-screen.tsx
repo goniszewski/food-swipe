@@ -11,6 +11,7 @@ import { NavigatorParamList } from "../../navigators"
 import { color } from "../../theme"
 import { Button, Text, Tile, Badge, Icon } from "react-native-elements"
 import { Recipe, User, useStores } from "../../models"
+import { Recommendation } from "../../models/recommendation/recommendation"
 
 const WideView = styled.View`
   align-items: center;
@@ -26,8 +27,6 @@ const styles = {
     flex: 1;
   `,
   recipeContainer: css`
-    /* width: 92%;
-    height: 70%; */
     border-radius: 20px;
   `,
   recipeTileTitleContainer: css`
@@ -52,29 +51,28 @@ const styles = {
 export const RecommendationsScreen: FC<
   StackScreenProps<NavigatorParamList, "recommendations">
 > = observer(({ navigation }) => {
-  const { recipeStore, userStore } = useStores()
+  const { recommendationStore, userStore } = useStores()
   // const { recipes }: { recipes: Recipe[] } = recipeStore
-  const { user }: { user: User } = userStore
-  const { fetchedRecommendedRecipes } = user
+  const { recommendations }: { recommendations: Recommendation[] } = recommendationStore
 
   useEffect(() => {
-    console.log("typeof user.fetchedRecommendedRecipes", typeof user.fetchedRecommendedRecipes)
-    if (user.fetchedRecommendedRecipes) {
+    console.log("Recommendations count: ", recommendations.length)
+    if (recommendations.length === 0) {
       ;(async () => {
-        await userStore.getRecommendations()
+        await recommendationStore.getRecommendations()
       })()
     }
-  }, [user.recommendedRecipes])
+  }, [recommendations])
 
   const onApprove = async (index: number) => {
-    const { id } = fetchedRecommendedRecipes[index]
+    const { id } = recommendations[index]
     console.info(`Approving recipe with id ${id}`)
 
     return userStore.approveRecipe(id)
   }
 
   const onReject = async (index: number) => {
-    const { id } = fetchedRecommendedRecipes[index]
+    const { id } = recommendations[index]
     console.info(`Rejecting recipe with id ${id}`)
 
     return userStore.rejectRecipe(id)
@@ -84,9 +82,9 @@ export const RecommendationsScreen: FC<
     <Screen style={styles.root} preset="fixed">
       <WideView>
         <Text h1>Some Recipes</Text>
-        <Text>Found {fetchedRecommendedRecipes.length} recipes</Text>
+        <Text>Found {recommendations.length} recipes</Text>
         <CardsSwipe
-          cards={[...fetchedRecommendedRecipes]}
+          cards={[...recommendations]}
           cardContainerStyle={styles.recipeContainer}
           renderCard={(recipe) => (
             <View style={styles.root}>

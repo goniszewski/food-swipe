@@ -58,7 +58,6 @@ export class UserApi {
 
       const recipes = response.data
 
-
       return { kind: "ok", recipes }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
