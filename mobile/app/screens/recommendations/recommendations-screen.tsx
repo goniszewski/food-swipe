@@ -1,6 +1,6 @@
-import React, { FC, useEffect } from "react"
+import React, { createRef, FC, useEffect } from "react"
 import { observer } from "mobx-react-lite"
-import { View } from "react-native"
+import { View, ImageBackground } from "react-native"
 import styled, { css } from "@emotion/native"
 import CardsSwipe from "react-native-cards-swipe"
 import { Screen } from "../../components"
@@ -9,42 +9,87 @@ import { NavigatorParamList } from "../../navigators"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "../../models"
 import { color } from "../../theme"
-import { Button, Text, Tile, Badge, Icon } from "react-native-elements"
+import { Image, Text, Tile, Badge, Icon, Header } from "react-native-elements"
 import { Recipe, User, useStores } from "../../models"
 import { Recommendation } from "../../models/recommendation/recommendation"
 
 const WideView = styled.View`
   align-items: center;
-  justify-content: center;
-  width: 80%;
+  width: 100%;
   flex: 1;
+  /* justify-content: center; */
 `
 
 const styles = {
   root: css`
     background-color: ${color.palette.white};
-    align-items: center;
+    /* align-items: center; */
+    /* flex: 1; */
+  `,
+  header: css`
+    margin-bottom: 5%;
+  `,
+  cardContainer: css`
     flex: 1;
+    width: 95%;
+    border-radius: 15px;
   `,
-  recipeContainer: css`
-    border-radius: 20px;
+  card: css`
+    flex: 1;
+    min-width: 100%;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    border: 1px solid ${color.palette.lightGrey};
   `,
-  recipeTileTitleContainer: css`
+  cardImage: css`
+    border-radius: 15px;
+  `,
+  cardTitle: css`
     background: rgba(40, 40, 40, 0.8);
+    color: ${color.palette.white};
     font-weight: 600;
     font-size: 26px;
     text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 10%;
   `,
-  recipeTileCaptionContainer: css`
+
+  cardCaption: css`
+    color: ${color.palette.white};
     background: rgba(40, 40, 40, 0.8);
     font-style: italic;
     font-size: 18px;
+    padding: 5px;
+  `,
+  cardPreparation: css`
+    margin-top: 10%;
+    padding: 5px;
+    color: ${color.palette.white};
+    background: rgba(40, 40, 40, 0.8);
+    font-size: 18px;
   `,
   reject: css`
-    margin-top: 40%;
+    margin-top: 20%;
+    margin-left: 10%;
   `,
   accept: css`
-    margin-top: 40%;
+    margin-top: 20%;
+    margin-left: 10%;
+  `,
+  footer: css`
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: 70%;
+    margin: 5% 15%;
+  `,
+  rejectFooter: css`
+    font-size: 22px;
+    color: red;
+  `,
+  acceptFooter: css`
+    font-size: 22px;
+    color: green;
   `,
 }
 
@@ -54,6 +99,8 @@ export const RecommendationsScreen: FC<
   const { recommendationStore, userStore } = useStores()
   // const { recipes }: { recipes: Recipe[] } = recipeStore
   const { recommendations }: { recommendations: Recommendation[] } = recommendationStore
+
+  const swiperRef = createRef()
 
   useEffect(() => {
     console.log("Recommendations count: ", recommendations.length)
@@ -80,35 +127,48 @@ export const RecommendationsScreen: FC<
 
   return (
     <Screen style={styles.root} preset="fixed">
+      <Header
+        backgroundColor={color.palette.white}
+        centerComponent={{
+          text: "Recommendations",
+          style: { color: color.palette.black, fontSize: 20 },
+        }}
+        rightComponent={{
+          icon: "favorite",
+          color: color.palette.black,
+          onPress: () => navigation.navigate("home"),
+        }}
+      />
       <WideView>
-        <Text h1>Some Recipes</Text>
-        <Text>Found {recommendations.length} recipes</Text>
+        {/* <View style={styles.header}>
+          <Text h1>Recommendations</Text>
+        </View> */}
         <CardsSwipe
           cards={[...recommendations]}
-          cardContainerStyle={styles.recipeContainer}
-          renderCard={(recipe) => (
-            <View style={styles.root}>
-              {recipe && (
-                <>
-                  <Text>Dada</Text>
-                  <Tile
-                    imageSrc={{ uri: recipe.image }}
-                    // imageProps={{ resizeMode: "cover" }}
-                    // contentContainerStyle={{ height: 70, backgroundColor: "#ccc" }}
-                    title={recipe.name}
-                    featured
-                    caption={`${recipe.description} ${
-                      recipe.preparationTime > 0
-                        ? `\nPreparation time: ${recipe.preparationTime}`
-                        : ""
-                    }`}
-                    captionStyle={styles.recipeTileCaptionContainer}
-                    titleStyle={styles.recipeTileTitleContainer}
-                  />
-                </>
-              )}
-            </View>
-          )}
+          cardContainerStyle={styles.cardContainer}
+          ref={swiperRef}
+          renderCard={(recipe) =>
+            recipe ? (
+              <ImageBackground
+                source={{ uri: recipe.image }}
+                style={styles.card}
+                imageStyle={styles.cardImage}
+                resizeMode="cover"
+              >
+                <Text style={styles.cardTitle}>{recipe.name}</Text>
+                <Text style={styles.cardCaption}>{recipe.description}</Text>
+                {recipe.preparationTime ? (
+                  <Text
+                    style={styles.cardPreparation}
+                  >{`Preparation time: ${recipe.preparationTime}`}</Text>
+                ) : null}
+              </ImageBackground>
+            ) : (
+              <View>
+                <Text>Loading...</Text>
+              </View>
+            )
+          }
           renderNope={() => (
             <Icon
               name="meh-rolling-eyes"
@@ -131,6 +191,24 @@ export const RecommendationsScreen: FC<
           onSwipedRight={(index) => onApprove(index)}
         />
       </WideView>
+      <View style={styles.footer}>
+        <Text
+          style={{ ...styles.rejectFooter }}
+          onPress={() => {
+            swiperRef.current.swipeLeft()
+          }}
+        >
+          meh...
+        </Text>
+        <Text
+          style={{ ...styles.acceptFooter }}
+          onPress={() => {
+            swiperRef.current.swipeRight()
+          }}
+        >
+          yummy!
+        </Text>
+      </View>
     </Screen>
   )
 })
