@@ -6,6 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { InteractionEventTypes } from 'src/shared/constants/interaction-event-types.enum';
+import { InteractionSources } from 'src/shared/constants/interaction-sources.enum';
 import { Recipe } from '../recipe/entities/recipe.schema';
 import { RecipeService } from '../recipe/recipe.service';
 import { RecommenderChoice } from '../recommender/models/recommender-choice';
@@ -98,6 +99,69 @@ export class UserService {
     );
 
     return user.save();
+  }
+
+  async generateRandomChoices(userIds: string[], randomChoices: number) {
+    const users = await this.userModel.find({ login: { $in: userIds } }).exec();
+
+    console.log({ users });
+
+    if (users.length === 0) {
+      throw new NotFoundException('No users found.');
+    }
+
+    const choices = await Promise.all(
+      users.map(async (user) => {
+        const randomRecipes = await this.recipeService.findRandomRecipes(
+          randomChoices,
+          {
+            allergens: user.allergyTo,
+            isVegan: user.defaultVegan,
+            isVegetarian: user.defaultVegetarian,
+          },
+        );
+
+        const choicesResponses = await Promise.all(
+          randomRecipes.map(async (recipe) => {
+            // const recipe = await this.recipeService.findById(recipeId);
+            const choice = await new Promise((resolve, reject) => {
+              // setTimeout(() => {
+              this.addChoice({
+                userId: user._id,
+                recipeId: recipe.id,
+                source: InteractionSources.BACKEND,
+                timestamp: new Date(),
+              })
+                .then(resolve)
+                .catch(reject);
+              // }, 1000);
+            });
+
+            return choice;
+          }),
+        );
+
+        return choicesResponses;
+      }),
+    );
+
+    return choices;
+  }
+
+  async generateCSVOfAllChoices() {
+    const choices = await this.userRecipeInteractionModel
+      .find({ eventType: InteractionEventTypes.CHOICE })
+      .populate('user')
+      .populate('recipe')
+      .exec();
+
+    return this.recommenderService.generateChoicesCSV(choices);
+  }
+
+  async generateUsersCSV() {
+    const users = await this.userModel.find().exec();
+
+    return this.recommenderService.generateUsersCSV(users);
   }
 
   async addFavoriteRecipe({

@@ -86,6 +86,8 @@ export class RecommenderService {
             object: (value: any[]) => (value ? value.join('|') : 'null'),
             number: (value: any) => (value ? `${value}` : 'null'),
             string: (value: any) => (value ? value : 'null'),
+            date: (value: Date) =>
+              value ? Math.round(value.getTime() / 1000).toString() : 'null',
           },
         },
         (err: any, output: string) => {

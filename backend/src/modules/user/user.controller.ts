@@ -38,6 +38,24 @@ export class UserController {
     return this.userService.addChoice({ userId, recipeId, timestamp, source });
   }
 
+  @Post('generate-random-choices')
+  async generateRandomChoices(
+    @Body()
+    { userIds, randomChoices }: { userIds: string[]; randomChoices: number },
+  ) {
+    return this.userService.generateRandomChoices(userIds, randomChoices);
+  }
+
+  @Get('generate-csv-of-all-choices')
+  async generateCsvOfAllChoices() {
+    return this.userService.generateCSVOfAllChoices();
+  }
+
+  @Get('generate-csv-of-all-users')
+  async generateCsvOfAllUsers() {
+    return this.userService.generateUsersCSV();
+  }
+
   @Patch('favourites')
   async addFavorite(@Request() req, @Body() body) {
     const { id: userId }: Partial<User> = req.user;
