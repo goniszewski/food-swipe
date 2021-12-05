@@ -56,7 +56,7 @@ export class UserController {
     return this.userService.generateUsersCSV();
   }
 
-  @Patch('favourites')
+  @Patch('favorites')
   async addFavorite(@Request() req, @Body() body) {
     const { id: userId }: Partial<User> = req.user;
     const {
@@ -89,7 +89,7 @@ export class UserController {
     return this.userService.getChoices(userId, pagination);
   }
 
-  @Get('favourites')
+  @Get('favorites')
   async getFavoriteRecipes(
     @Request() req,
     @Param() pagination: ArrayPagination,
@@ -126,9 +126,11 @@ export class UserController {
     return this.userService.removeRecommendation(userId, recipeId);
   }
 
-  @Delete('favourite/:recipeId')
+  @Delete('favorites/:recipeId')
   async removeFavorite(@Request() req, @Param('recipeId') recipeId) {
     const { id: userId }: Partial<User> = req.user;
+
+    console.log({ userId, recipeId });
 
     return this.userService.removeFavoriteRecipe(userId, recipeId);
   }

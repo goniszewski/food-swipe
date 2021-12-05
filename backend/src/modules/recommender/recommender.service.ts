@@ -84,7 +84,7 @@ export class RecommenderService {
           cast: {
             boolean: (value: boolean) => (value ? 'true' : 'false'),
             object: (value: any[]) => (value ? value.join('|') : 'null'),
-            number: (value: any) => (value ? `${value}` : 'null'),
+            number: (value: any) => (value ? `${value}` : '0'),
             string: (value: any) => (value ? value : 'null'),
             date: (value: Date) =>
               value ? Math.round(value.getTime() / 1000).toString() : 'null',
@@ -119,21 +119,42 @@ export class RecommenderService {
 
     const recipes: RecommenderRecipe[] = recipeObjects.map(
       (recipe: Recipe) => ({
-        ITEM_ID: recipe.id,
+        ITEM_ID: recipe.id || 'unknown',
         // CALORIES_PER_SERVING: recipe.caloriesPerServing,
-        PREPARATION_TIME: recipe.preparationTime,
+        PREPARATION_TIME: recipe.preparationTime || 0,
         // DESCRIPTION: recipe.description,
         INGREDIENTS: recipe.ingredients.map(
-          (ingredient) => ingredient.item.name,
-        ),
-        CATEGORIES: recipe.categories.map((category) => category.name),
-        TAGS: recipe.tags,
+          (ingredient) => ingredient.item.name.replace(/,|\s+/g, '_'),
+        ) || ['null'],
+        CATEGORIES: recipe.categories.map((category) => category.name?category.name.replace(/,|\s+/g, '_'):'null') || [
+          'null',
+        ],
+        TAGS: recipe.tags.map(tag=>tag.replace(/,|\s+/g, '_')) || ['null'],
         VEGAN: recipe.isVegan,
         VEGETARIAN: recipe.isVegetarian,
         GLUTEN_FREE: recipe.isGlutenFree,
-        AUTHOR: recipe.author,
+        AUTHOR: recipe.author.replace(/,|\s+/g, '_') || 'unknown',
       }),
     );
+
+    recipes.map((recipe) => {
+      if (
+        typeof recipe.ITEM_ID !== 'string' ||
+        recipe.ITEM_ID.length === 0 ||
+        typeof recipe.PREPARATION_TIME !== 'number' ||
+        typeof recipe.INGREDIENTS !== 'object' ||
+        recipe.INGREDIENTS.length === 0 ||
+        typeof recipe.TAGS !== 'object' ||
+        recipe.TAGS.length === 0 ||
+        typeof recipe.VEGAN !== 'boolean' ||
+        typeof recipe.VEGETARIAN !== 'boolean' ||
+        typeof recipe.GLUTEN_FREE !== 'boolean' ||
+        typeof recipe.AUTHOR !== 'string' ||
+        recipe.AUTHOR.length === 0
+      ) {
+        console.log('Recipe has invalid data: ', recipe);
+      }
+    });
 
     return this.generateCSV(recipes);
   }

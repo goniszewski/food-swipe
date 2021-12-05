@@ -177,7 +177,7 @@ export class UserService {
       throw new NotFoundException(`Recipe with id ${recipeId} doesn't exist.`);
     }
 
-    const favourite = await new this.userRecipeInteractionModel({
+    const favorite = await new this.userRecipeInteractionModel({
       user,
       recipe,
       timestamp,
@@ -185,7 +185,18 @@ export class UserService {
       eventType: InteractionEventTypes.FAVORITE,
     }).save();
 
-    return favourite;
+    const favoritedRecipes = this.userRecipeInteractionModel
+      .find({
+        eventType: InteractionEventTypes.FAVORITE,
+        user: user._id,
+      })
+      .populate('recipe')
+      .exec()
+      .then((favoritedRecipes) =>
+        favoritedRecipes.map((recipe) => recipe.recipe),
+      );
+
+    return favoritedRecipes;
   }
 
   async addRecommendations(userId: string, recommendationIds: string[]) {
@@ -317,11 +328,24 @@ export class UserService {
     const user = await this.userModel.findById(userId);
     const recipe = await this.recipeService.findById(recipeId);
 
-    await this.userRecipeInteractionModel
+    const removed = await this.userRecipeInteractionModel
       .deleteOne({ user, recipe, eventType: InteractionEventTypes.FAVORITE })
       .exec();
 
-    return user.save();
+      console.log(removed);
+
+      const favoritedRecipes = this.userRecipeInteractionModel
+      .find({
+        eventType: InteractionEventTypes.FAVORITE,
+        user: user._id,
+      })
+      .populate('recipe')
+      .exec()
+      .then((favoritedRecipes) =>
+        favoritedRecipes.map((recipe) => recipe.recipe),
+      );
+
+    return favoritedRecipes;
   }
 
   async remove(id: string) {
