@@ -9,7 +9,7 @@ export const UserModel = types.model("User").props({
   // favourites: types.array(RecipeModel),
   // choicesHistory: types.array(RecipeModel),
   // recommendedRecipes: types.array(RecipeModel),
-  favourites: types.array(types.string),
+  favorites: types.maybe(types.array(RecipeModel)),
   choicesHistory: types.array(types.string),
   recommendedRecipes: types.array(types.string),
   fetchedRecommendedRecipes: types.maybe(types.array(RecipeModel)),

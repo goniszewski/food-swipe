@@ -65,13 +65,13 @@ export class UserApi {
     }
   }
 
-  async getFavourites(
+  async getFavorites(
     page = DEFAULT_PAGINATION.page,
     limit = DEFAULT_PAGINATION.limit,
   ): Promise<GetRecipesResult> {
     try {
       const response: ApiResponse<any> = await this.api.apisauce.get(
-        `http://localhost:9000/user/favourites/`,
+        `http://localhost:9000/user/favorites/`,
         { page, limit },
       )
 
@@ -118,7 +118,7 @@ export class UserApi {
     }
   }
 
-  async addFavourite(recipeId: string): Promise<GetUserResult> {
+  async addFavorite(recipeId: string): Promise<any> {
     const payload: AddUserRecipeInteraction = {
       recipeId,
       timestamp: new Date(),
@@ -127,18 +127,20 @@ export class UserApi {
 
     try {
       const response: ApiResponse<any> = await this.api.apisauce.patch(
-        "http://localhost:9000/user/favourites",
+        "http://localhost:9000/user/favorites",
         payload,
       )
+
+      console.log(response)
 
       if (!response.ok) {
         const problem = getGeneralApiProblem(response)
         if (problem) return problem
       }
 
-      const user = response.data
+      const favorites = response.data
 
-      return { kind: "ok", user }
+      return { kind: "ok", favorites }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }
@@ -159,6 +161,26 @@ export class UserApi {
       const user = response.data
 
       return { kind: "ok", user }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
+  async removeFavorite(recipeId: string): Promise<any> {
+    try {
+      const response: ApiResponse<any> = await this.api.apisauce.delete(
+        `http://localhost:9000/user/favorites/${recipeId}`,
+      )
+
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const favorites = response.data
+
+      return { kind: "ok", favorites }
     } catch (e) {
       __DEV__ && console.tron.log(e.message)
       return { kind: "bad-data" }

@@ -14,6 +14,7 @@ import {
   DemoListScreen,
   LoginScreen,
   RecommendationsScreen,
+  FavoritesScreen,
 } from "../screens"
 import { navigationRef } from "./navigation-utilities"
 
@@ -33,6 +34,7 @@ export type NavigatorParamList = {
   welcome: undefined
   login: undefined
   recommendations: undefined
+  favorites: undefined
   demo: undefined
   demoList: undefined
 }
@@ -51,6 +53,7 @@ const AppStack = () => {
       <Stack.Screen name="welcome" component={WelcomeScreen} />
       <Stack.Screen name="login" component={LoginScreen} />
       <Stack.Screen name="recommendations" component={RecommendationsScreen} />
+      <Stack.Screen name="favorites" component={FavoritesScreen} />
       <Stack.Screen name="demo" component={DemoScreen} />
       <Stack.Screen name="demoList" component={DemoListScreen} />
     </Stack.Navigator>
@@ -83,5 +86,5 @@ AppNavigator.displayName = "AppNavigator"
  *
  * `canExit` is used in ./app/app.tsx in the `useBackButtonHandler` hook.
  */
-const exitRoutes = ["welcome"]
+const exitRoutes = ["welcome", "login", "recommendations"]
 export const canExit = (routeName: string) => exitRoutes.includes(routeName)

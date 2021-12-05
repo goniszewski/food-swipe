@@ -29,11 +29,12 @@ export const UserStoreModel = types
   }))
   .actions((self) => ({
     getUser: async () => {
-      const recipesApi = new UserApi(self.environment.api)
-      const result = await recipesApi.getUser()
+      const userApi = new UserApi(self.environment.api)
+      const result = await userApi.getUser()
+      const favorites = await userApi.getFavorites()
 
       if (result.kind === "ok") {
-        self.saveUser(result.user)
+        self.saveUser({ ...result.user, favorites })
       } else {
         __DEV__ && console.tron.log(result.kind)
       }
@@ -67,6 +68,27 @@ export const UserStoreModel = types
 
       if (result.kind === "ok") {
         self.saveUser(result.user)
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    },
+    favoriteRecipe: async (recipeId: string) => {
+      const userApi = new UserApi(self.environment.api)
+      const result = await userApi.addFavorite(recipeId)
+
+      if (result.kind === "ok") {
+        self.saveUser({ ...self.user, favorites: result.favorites })
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+      }
+    },
+    removeFavoriteRecipe: async (recipeId: string) => {
+      const userApi = new UserApi(self.environment.api)
+      const result = await userApi.removeFavorite(recipeId)
+      console.log(result)
+
+      if (result.kind === "ok") {
+        self.saveUser({ ...self.user, favorites: result.favorites })
       } else {
         __DEV__ && console.tron.log(result.kind)
       }

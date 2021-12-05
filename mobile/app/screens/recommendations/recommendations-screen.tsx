@@ -1,4 +1,4 @@
-import React, { createRef, FC, useEffect } from "react"
+import React, { createRef, FC, useEffect, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { View, ImageBackground } from "react-native"
 import styled, { css } from "@emotion/native"
@@ -97,6 +97,7 @@ export const RecommendationsScreen: FC<
   StackScreenProps<NavigatorParamList, "recommendations">
 > = observer(({ navigation }) => {
   const { recommendationStore, userStore } = useStores()
+  const [currentIndex, setCurrentIndex] = useState(0)
   // const { recipes }: { recipes: Recipe[] } = recipeStore
   const { recommendations }: { recommendations: Recommendation[] } = recommendationStore
 
@@ -110,6 +111,20 @@ export const RecommendationsScreen: FC<
       })()
     }
   }, [recommendations])
+
+  const isInFavorites = (index: number) => {
+    const { id } = recommendations[index]
+    const user: User = userStore.user
+    const favorites = user.favorites
+    return !!favorites.find((fav) => fav.id === id)
+  }
+
+  const onAddToFavorites = async (index: number) => {
+    const { id } = recommendations[index]
+    console.info(`Adding to favorites recipe with id ${id}`)
+
+    return userStore.favoriteRecipe(id)
+  }
 
   const onApprove = async (index: number) => {
     const { id } = recommendations[index]
@@ -126,7 +141,7 @@ export const RecommendationsScreen: FC<
   }
 
   return (
-    <Screen style={styles.root} preset="fixed">
+    <Screen style={styles.root} preset="fixed" statusBar={"dark-content"}>
       <Header
         backgroundColor={color.palette.white}
         centerComponent={{
@@ -136,7 +151,7 @@ export const RecommendationsScreen: FC<
         rightComponent={{
           icon: "favorite",
           color: color.palette.black,
-          onPress: () => navigation.navigate("home"),
+          onPress: () => navigation.navigate("favorites"),
         }}
       />
       <WideView>
@@ -187,6 +202,9 @@ export const RecommendationsScreen: FC<
               containerStyle={{ ...styles.accept, transform: [{ rotate: "-25deg" }] }}
             />
           )}
+          onSwiped={(index) => {
+            setCurrentIndex(index)
+          }}
           onSwipedLeft={(index) => onReject(index)}
           onSwipedRight={(index) => onApprove(index)}
         />
@@ -200,6 +218,15 @@ export const RecommendationsScreen: FC<
         >
           meh...
         </Text>
+        <Icon
+          name="heart"
+          type="font-awesome-5"
+          size={32}
+          color={color.palette.black}
+          onPress={() => onAddToFavorites(currentIndex)}
+          disabled={isInFavorites(currentIndex)}
+          disabledStyle={{ backgroundColor: null, opacity: 0.2 }}
+        />
         <Text
           style={{ ...styles.acceptFooter }}
           onPress={() => {
