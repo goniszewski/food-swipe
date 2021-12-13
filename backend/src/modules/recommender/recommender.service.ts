@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { PersonalizeClient } from '@aws-sdk/client-personalize';
 import {
@@ -50,6 +51,18 @@ export class RecommenderService {
         secretAccessKey: configService.get('PERSONALIZE_SECRET_ACCESS_KEY'),
       }),
     });
+  }
+
+  async getRecommendationsForUser(userId: string) {
+    const { data, status } = await axios.get(
+      `${this.configService.get('RECOMMENDER_RECOMMEND_API_URL')}/${userId}`,
+    );
+
+    if (status !== 200) {
+      throw new Error('Error getting recommendations');
+    }
+
+    return data;
   }
 
   public uploadCSV = async ({
@@ -123,13 +136,13 @@ export class RecommenderService {
         // CALORIES_PER_SERVING: recipe.caloriesPerServing,
         PREPARATION_TIME: recipe.preparationTime || 0,
         // DESCRIPTION: recipe.description,
-        INGREDIENTS: recipe.ingredients.map(
-          (ingredient) => ingredient.item.name.replace(/,|\s+/g, '_'),
+        INGREDIENTS: recipe.ingredients.map((ingredient) =>
+          ingredient.item.name.replace(/,|\s+/g, '_'),
         ) || ['null'],
-        CATEGORIES: recipe.categories.map((category) => category.name?category.name.replace(/,|\s+/g, '_'):'null') || [
-          'null',
-        ],
-        TAGS: recipe.tags.map(tag=>tag.replace(/,|\s+/g, '_')) || ['null'],
+        CATEGORIES: recipe.categories.map((category) =>
+          category.name ? category.name.replace(/,|\s+/g, '_') : 'null',
+        ) || ['null'],
+        TAGS: recipe.tags.map((tag) => tag.replace(/,|\s+/g, '_')) || ['null'],
         VEGAN: recipe.isVegan,
         VEGETARIAN: recipe.isVegetarian,
         GLUTEN_FREE: recipe.isGlutenFree,

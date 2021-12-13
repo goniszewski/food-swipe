@@ -111,6 +111,13 @@ export class UserController {
     return this.userService.getRecommendationsOrRandom(userId, pagination);
   }
 
+  @Get('recommendations/update')
+  async updateRecommendations(@Request() req) {
+    const { id: userId }: Partial<User> = req.user;
+
+    return this.userService.updateRecommendations(userId);
+  }
+
   @Get('login/:login')
   async findByLogin(@Param('login') login: string) {
     return this.userService.findByLogin(login);

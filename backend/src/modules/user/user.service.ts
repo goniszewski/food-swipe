@@ -290,6 +290,18 @@ export class UserService {
     return recommendations;
   }
 
+  async updateRecommendations(userId: string) {
+    const recommenderResponse =
+      await this.recommenderService.getRecommendationsForUser(userId);
+
+    const updateUserRecommendations = await this.addRecommendations(
+      userId,
+      Object.keys(recommenderResponse),
+    );
+
+    return updateUserRecommendations.recommendedRecipes;
+  }
+
   async findAll(): Promise<UserDocument[]> {
     return this.userModel.find({}).exec();
   }
@@ -332,9 +344,9 @@ export class UserService {
       .deleteOne({ user, recipe, eventType: InteractionEventTypes.FAVORITE })
       .exec();
 
-      console.log(removed);
+    console.log(removed);
 
-      const favoritedRecipes = this.userRecipeInteractionModel
+    const favoritedRecipes = this.userRecipeInteractionModel
       .find({
         eventType: InteractionEventTypes.FAVORITE,
         user: user._id,
