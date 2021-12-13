@@ -53,9 +53,11 @@ export class RecommenderService {
     });
   }
 
-  async getRecommendationsForUser(userId: string) {
+  async getRecommendationsForUser(userId: string, count = 20) {
     const { data, status } = await axios.get(
-      `${this.configService.get('RECOMMENDER_RECOMMEND_API_URL')}/${userId}`,
+      `${this.configService.get(
+        'RECOMMENDER_RECOMMEND_API_URL',
+      )}/${userId}?count=${count}`,
     );
 
     if (status !== 200) {
