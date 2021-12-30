@@ -14,6 +14,7 @@ import { RecommenderUser } from '../recommender/models/recommender-user';
 import { RecommenderService } from '../recommender/recommender.service';
 import { AddUserRecipeInteractionDto } from './dto/add-user-recipe-interaction.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserPreferencesDto } from './dto/update-user-preferences.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   UserRecipeInteraction,
@@ -84,15 +85,15 @@ export class UserService {
       );
     }
 
-    const recommenderResponse = await this.recommenderService.sendChoice(
-      choice,
-    );
+    // const recommenderResponse = await this.recommenderService.sendChoice(
+    //   choice,
+    // );
 
-    if (recommenderResponse?.$metadata.httpStatusCode !== 200) {
-      console.error(
-        `Encountered an error while adding choice ${choice.id} to Recommender.`,
-      );
-    }
+    // if (recommenderResponse?.$metadata.httpStatusCode !== 200) {
+    //   console.error(
+    //     `Encountered an error while adding choice ${choice.id} to Recommender.`,
+    //   );
+    // }
 
     user.recommendedRecipes = user.recommendedRecipes.filter(
       (rec) => rec.id !== recipe.id,
@@ -103,8 +104,6 @@ export class UserService {
 
   async generateRandomChoices(userIds: string[], randomChoices: number) {
     const users = await this.userModel.find({ login: { $in: userIds } }).exec();
-
-    console.log({ users });
 
     if (users.length === 0) {
       throw new NotFoundException('No users found.');
@@ -261,10 +260,24 @@ export class UserService {
     userId: string,
     { page = 1, limit = 20 }: { page: number; limit: number },
   ) {
-    const { recommendedRecipes } = await this.userModel
-      .findById(userId)
-      .populate('recommendedRecipes')
-      .exec();
+    const user: any = await this.findById(userId);
+
+    if (!user.recommendedRecipes || user.recommendedRecipes.length === 0) {
+      const recommendations =
+        await this.recommenderService.getRecommendationsForUser(userId);
+
+      user.recommendedRecipes = Object.keys(recommendations);
+      user.save();
+
+      console.log({ recommendations });
+
+      return this.userModel
+        .findById(userId)
+        .populate('recommendedRecipes')
+        .exec()
+        .then((user) => user.recommendedRecipes);
+    }
+    const { recommendedRecipes } = await user.populate('recommendedRecipes');
 
     return recommendedRecipes.slice((page - 1) * limit, page * limit);
   }
@@ -285,6 +298,15 @@ export class UserService {
         limit,
         userPreferences,
       );
+
+      await this.userModel
+        .findByIdAndUpdate(userId, {
+          $push: {
+            recommendedRecipes: randomRecipes.map((recipe) => recipe.id),
+          },
+        })
+        .exec();
+
       return randomRecipes;
     }
     return recommendations;
@@ -300,6 +322,21 @@ export class UserService {
     );
 
     return updateUserRecommendations.recommendedRecipes;
+  }
+
+  async updatePreferences(
+    userId: string,
+    preferences: UpdateUserPreferencesDto,
+  ) {
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, preferences, { new: true })
+      .exec();
+
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} doesn't exist.`);
+    }
+
+    return user;
   }
 
   async findAll(): Promise<UserDocument[]> {
@@ -318,7 +355,7 @@ export class UserService {
     return await this.userRecipeInteractionModel
       .find({ eventType: type })
       .populate('user')
-      .populate('recipe')
+
       .exec();
   }
 
@@ -327,13 +364,19 @@ export class UserService {
   }
 
   async removeRecommendation(userId: string, recipeId: string) {
-    const user = await this.userModel.findById(userId);
+    const user: any = await this.userModel.findById(userId).exec();
 
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} doesn't exist.`);
+    }
+    console.log(user.recommendedRecipes);
     user.recommendedRecipes = user.recommendedRecipes.filter(
-      (rec) => rec.id !== recipeId,
+      (rec) => rec !== recipeId,
     );
 
     return user.save();
+
+    // return user.toJSON();
   }
 
   async removeFavoriteRecipe(userId: string, recipeId: string) {

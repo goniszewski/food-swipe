@@ -17,6 +17,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from './entities/user.schema';
 import ArrayPagination from 'src/shared/interfaces/array-pagination.interface';
 import { AddUserRecipeInteractionDto } from './dto/add-user-recipe-interaction.dto';
+import { UpdateUserPreferencesDto } from './dto/update-user-preferences.dto';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'))
@@ -28,12 +29,19 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Patch('preferences')
+  async updatePreferences(
+    @Request() req,
+    @Body() body: UpdateUserPreferencesDto,
+  ) {
+    const { id: userId }: Partial<User> = req.user;
+    return this.userService.updatePreferences(userId, body);
+  }
+
   @Patch('choices')
   async addChoice(@Request() req, @Body() body) {
     const { id: userId }: Partial<User> = req.user;
     const { recipeId, timestamp, source } = body;
-
-    console.log(body);
 
     return this.userService.addChoice({ userId, recipeId, timestamp, source });
   }
@@ -129,6 +137,8 @@ export class UserController {
     @Request() req,
   ) {
     const { id: userId }: Partial<User> = req.user;
+
+    console.log({ userId, recipeId });
 
     return this.userService.removeRecommendation(userId, recipeId);
   }
