@@ -89,6 +89,31 @@ export class UserApi {
     }
   }
 
+  async updatePreferences(preferences: object): Promise<any> {
+    const payload: any = {
+      ...preferences,
+    }
+
+    try {
+      const response: ApiResponse<any> = await this.api.apisauce.patch(
+        "http://localhost:9000/user/preferences",
+        payload,
+      )
+
+      if (!response.ok) {
+        const problem = getGeneralApiProblem(response)
+        if (problem) return problem
+      }
+
+      const user = response.data
+
+      return { kind: "ok", user }
+    } catch (e) {
+      __DEV__ && console.tron.log(e.message)
+      return { kind: "bad-data" }
+    }
+  }
+
   async addChoice(recipeId: string): Promise<any> {
     const payload: AddUserRecipeInteraction = {
       recipeId,
@@ -101,8 +126,6 @@ export class UserApi {
         "http://localhost:9000/user/choices",
         payload,
       )
-
-      console.log(response)
 
       if (!response.ok) {
         const problem = getGeneralApiProblem(response)
@@ -147,7 +170,7 @@ export class UserApi {
     }
   }
 
-  async removeRecommendation(recipeId: string): Promise<GetUserResult> {
+  async removeRecommendation(recipeId: string): Promise<any> {
     try {
       const response: ApiResponse<any> = await this.api.apisauce.delete(
         `http://localhost:9000/user/recommendations/${recipeId}`,

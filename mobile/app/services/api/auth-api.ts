@@ -21,6 +21,7 @@ export class AuthApi {
     try {
       const payload: Credentials = { login, password }
       // make the api call
+
       const response: ApiResponse<any> = await this.api.apisauce.post(
         "http://localhost:9000/auth/login",
         payload,

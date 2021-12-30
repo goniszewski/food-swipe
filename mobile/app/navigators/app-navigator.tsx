@@ -15,6 +15,7 @@ import {
   LoginScreen,
   RecommendationsScreen,
   FavoritesScreen,
+  UserPreferencesScreen,
 } from "../screens"
 import { navigationRef } from "./navigation-utilities"
 
@@ -35,6 +36,7 @@ export type NavigatorParamList = {
   login: undefined
   recommendations: undefined
   favorites: undefined
+  userPreferences: undefined
   demo: undefined
   demoList: undefined
 }
@@ -54,6 +56,7 @@ const AppStack = () => {
       <Stack.Screen name="login" component={LoginScreen} />
       <Stack.Screen name="recommendations" component={RecommendationsScreen} />
       <Stack.Screen name="favorites" component={FavoritesScreen} />
+      <Stack.Screen name="userPreferences" component={UserPreferencesScreen} />
       <Stack.Screen name="demo" component={DemoScreen} />
       <Stack.Screen name="demoList" component={DemoListScreen} />
     </Stack.Navigator>

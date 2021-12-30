@@ -2,6 +2,8 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { RecipeModel } from "../recipe/recipe"
 // import { RecipeModel } from "../recipe/recipe"
 
+import Allergens from "../../constants/allergens.enum"
+
 export const UserModel = types.model("User").props({
   id: types.identifier,
   login: types.string,

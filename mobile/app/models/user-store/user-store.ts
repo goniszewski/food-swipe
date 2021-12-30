@@ -20,11 +20,17 @@ export const UserStoreModel = types
     saveRecommendations: (fetchedRecommendedRecipes) => {
       self.user = { ...self.user, fetchedRecommendedRecipes }
     },
+    updateRecommendations: (recommendedRecipes) => {
+      self.user = { ...self.user, recommendedRecipes }
+    },
     saveChoices: (choicesHistory) => {
       self.user = { ...self.user, choicesHistory }
     },
     addChoice: (choice) => {
       self.user = self.user.choicesHistory.push(choice)
+    },
+    savePreferences: (preferences) => {
+      self.user = { ...self.user, ...preferences }
     },
   }))
   .actions((self) => ({
@@ -56,9 +62,22 @@ export const UserStoreModel = types
       const result = await userApi.removeRecommendation(recipeId)
 
       if (result.kind === "ok") {
-        self.saveRecommendations(self.user.recommendedRecipes.filter((r) => r !== recipeId))
+        self.updateRecommendations(self.user.recommendedRecipes.filter((r) => r !== recipeId))
       } else {
         __DEV__ && console.tron.log(result.kind)
+      }
+    },
+
+    updatePreferences: async (preferences: object) => {
+      const userApi = new UserApi(self.environment.api)
+      const result = await userApi.updatePreferences(preferences)
+
+      if (result.kind === "ok") {
+        self.saveUser(result.user)
+        return true
+      } else {
+        __DEV__ && console.tron.log(result.kind)
+        return false
       }
     },
 
@@ -72,6 +91,7 @@ export const UserStoreModel = types
         __DEV__ && console.tron.log(result.kind)
       }
     },
+
     favoriteRecipe: async (recipeId: string) => {
       const userApi = new UserApi(self.environment.api)
       const result = await userApi.addFavorite(recipeId)

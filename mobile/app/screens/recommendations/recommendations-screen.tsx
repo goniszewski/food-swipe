@@ -12,6 +12,7 @@ import { color } from "../../theme"
 import { Image, Text, Tile, Badge, Icon, Header } from "react-native-elements"
 import { Recipe, User, useStores } from "../../models"
 import { Recommendation } from "../../models/recommendation/recommendation"
+import { Favorite } from "../../models/favorite/favorite"
 
 const WideView = styled.View`
   align-items: center;
@@ -96,10 +97,11 @@ const styles = {
 export const RecommendationsScreen: FC<
   StackScreenProps<NavigatorParamList, "recommendations">
 > = observer(({ navigation }) => {
-  const { recommendationStore, userStore } = useStores()
+  const { recommendationStore, userStore, favoriteStore } = useStores()
   const [currentIndex, setCurrentIndex] = useState(0)
   // const { recipes }: { recipes: Recipe[] } = recipeStore
   const { recommendations }: { recommendations: Recommendation[] } = recommendationStore
+  const { favorites }: { favorites: Favorite[] } = favoriteStore
 
   const swiperRef = createRef()
 
@@ -112,10 +114,17 @@ export const RecommendationsScreen: FC<
     }
   }, [recommendations])
 
+  useEffect(() => {
+    if (favorites.length === 0) {
+      ;(async () => {
+        await favoriteStore.getFavorites()
+      })()
+    }
+  }, [favorites])
+
   const isInFavorites = (index: number) => {
     const { id } = recommendations[index]
-    const user: User = userStore.user
-    const favorites = user.favorites
+
     return !!favorites.find((fav) => fav.id === id)
   }
 
@@ -144,6 +153,11 @@ export const RecommendationsScreen: FC<
     <Screen style={styles.root} preset="fixed" statusBar={"dark-content"}>
       <Header
         backgroundColor={color.palette.white}
+        leftComponent={{
+          icon: "settings",
+          style: { color: color.palette.black, fontSize: 20 },
+          onPress: () => navigation.navigate("userPreferences"),
+        }}
         centerComponent={{
           text: "Recommendations",
           style: { color: color.palette.black, fontSize: 20 },
@@ -155,9 +169,6 @@ export const RecommendationsScreen: FC<
         }}
       />
       <WideView>
-        {/* <View style={styles.header}>
-          <Text h1>Recommendations</Text>
-        </View> */}
         <CardsSwipe
           cards={[...recommendations]}
           cardContainerStyle={styles.cardContainer}
