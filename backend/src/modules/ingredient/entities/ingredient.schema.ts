@@ -1,6 +1,6 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Item } from 'src/modules/item/entities/item.schema';
+import { Item } from '../../../modules/item/entities/item.schema';
 import { Category } from '../../category/entities/category.schema';
 
 @Schema()

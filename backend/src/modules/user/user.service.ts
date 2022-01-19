@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { InteractionEventTypes } from 'src/shared/constants/interaction-event-types.enum';
-import { InteractionSources } from 'src/shared/constants/interaction-sources.enum';
+import { InteractionEventTypes } from '../../shared/constants/interaction-event-types.enum';
+import { InteractionSources } from '../../shared/constants/interaction-sources.enum';
 import { Recipe } from '../recipe/entities/recipe.schema';
 import { RecipeService } from '../recipe/recipe.service';
 import { RecommenderChoice } from '../recommender/models/recommender-choice';
@@ -41,11 +41,12 @@ export class UserService {
 
     const preferences = { allergens: user.allergyTo };
 
-    if (user.defaultVegan) preferences['isVegan'] = true;
-    if (user.defaultVegetarian) preferences['isVegetarian'] = true;
+    preferences['isVegan'] = user.defaultVegan;
+    preferences['isVegetarian'] = user.defaultVegetarian;
 
     return preferences;
   }
+
   public async create(createUserDto: CreateUserDto) {
     const user = await new this.userModel(createUserDto).save();
 
@@ -84,16 +85,6 @@ export class UserService {
         `Couldn't add recipe with id ${recipeId} as choice in DB.`,
       );
     }
-
-    // const recommenderResponse = await this.recommenderService.sendChoice(
-    //   choice,
-    // );
-
-    // if (recommenderResponse?.$metadata.httpStatusCode !== 200) {
-    //   console.error(
-    //     `Encountered an error while adding choice ${choice.id} to Recommender.`,
-    //   );
-    // }
 
     user.recommendedRecipes = user.recommendedRecipes.filter(
       (rec) => rec.id !== recipe.id,

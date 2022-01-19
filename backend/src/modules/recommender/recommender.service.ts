@@ -11,7 +11,7 @@ import {
 } from '@aws-sdk/client-personalize-events';
 import { Recipe, RecipeDocument } from '../recipe/entities/recipe.schema';
 import { RecommenderRecipe } from './models/recommender-recipe';
-import { chunk } from 'src/shared/utils/utils';
+import { chunk } from '../../shared/utils/utils';
 import { UserDocument } from '../user/entities/user.schema';
 import {
   UserRecipeInteraction,

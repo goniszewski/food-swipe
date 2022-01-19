@@ -3,6 +3,6 @@ import { InteractionSources } from 'src/shared/constants/interaction-sources.enu
 export class AddUserRecipeInteractionDto {
   userId: string;
   recipeId: string;
-  timestamp: Date;
+  timestamp?: Date;
   source: InteractionSources;
 }

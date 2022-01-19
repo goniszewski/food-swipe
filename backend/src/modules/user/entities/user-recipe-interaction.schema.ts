@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Recipe } from 'src/modules/recipe/entities/recipe.schema';
-import { InteractionEventTypes } from 'src/shared/constants/interaction-event-types.enum';
-import { InteractionSources } from 'src/shared/constants/interaction-sources.enum';
+import { Recipe } from '../../../modules/recipe/entities/recipe.schema';
+import { InteractionEventTypes } from '../../../shared/constants/interaction-event-types.enum';
+import { InteractionSources } from '../../../shared/constants/interaction-sources.enum';
 import { User } from './user.schema';
 
 @Schema()
