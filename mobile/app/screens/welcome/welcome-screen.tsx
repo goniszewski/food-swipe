@@ -40,7 +40,11 @@ export const WelcomeScreen: FC<StackScreenProps<NavigatorParamList, "welcome">> 
         </WideView>
         <WideView>
           <Text h3>Hi there!</Text>
-          <Button title="Let's get started!" onPress={() => navigation.navigate("login")} />
+          <Button
+            testID="welcomeScreenContinueButton"
+            title="Let's get started!"
+            onPress={() => navigation.navigate("login")}
+          />
         </WideView>
       </Screen>
     )
