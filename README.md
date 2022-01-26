@@ -1,3 +1,9 @@
-# food-swipe
+__FoodSwipe__
 
-Sample README.md
+# Aplikacja stworzona na potrzeby pracy dyplomowej
+
+### Autor
+
+__Robert Goniszewski__
+
+2022

@@ -2,12 +2,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
-import { DataFetcherModule } from './modules/data-fetcher/data-fetcher.module';
 import { ItemModule } from './modules/item/item.module';
 import { RecipeModule } from './modules/recipe/recipe.module';
 import { RecommenderModule } from './modules/recommender/recommender.module';
@@ -39,7 +37,6 @@ import { UserModule } from './modules/user/user.module';
     ItemModule,
     CategoryModule,
     UserModule,
-    DataFetcherModule,
     AuthModule,
     RecommenderModule,
   ],
